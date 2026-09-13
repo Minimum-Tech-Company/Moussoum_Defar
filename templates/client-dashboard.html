@@ -379,7 +379,6 @@
             const progress = c.target_count > 0 ? Math.round((c.current_count / c.target_count) * 100) : 0;
             const modal = document.getElementById('modal');
             document.getElementById('modalTitle').textContent = c.title;
-            document.getElementById('modalSubtitle').textContent = 'Collection Details';
             document.getElementById('modalBody').innerHTML = `
                 <div style="display:flex;flex-direction:column;gap:16px;">
                     <div style="font-size:14px;color:rgba(255,255,255,0.6);line-height:1.6;">${c.description || 'No description'}</div>
