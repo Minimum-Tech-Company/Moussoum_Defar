@@ -52,6 +52,19 @@
         .card-header { padding: 24px 28px; border-bottom: 1px solid rgba(255,255,255,0.06); display: flex; justify-content: space-between; align-items: center; }
         .card-title { font-size: 18px; font-weight: 600; color: white; }
         .card-body { padding: 28px; }
+        .task-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; align-items: stretch; }
+        .task-card { background: rgba(10, 15, 26, 0.6); border: 1px solid rgba(255,255,255,0.06); border-radius: 14px; padding: 24px; transition: all 0.2s; display: flex; flex-direction: column; min-height: 260px; cursor: pointer; }
+        .task-card:hover { border-color: rgba(16, 185, 129, 0.2); transform: translateY(-2px); }
+        .task-type { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }
+        .task-title { font-size: 16px; font-weight: 600; color: white; margin-bottom: 8px; }
+        .task-desc { font-size: 13px; color: rgba(255,255,255,0.45); line-height: 1.6; margin-bottom: 16px; }
+        .task-meta { display: flex; gap: 16px; margin-bottom: 16px; }
+        .task-meta-item { font-size: 12px; color: rgba(255,255,255,0.4); }
+        .task-meta-item span { color: white; font-weight: 500; }
+        .task-reward { display: inline-block; padding: 6px 14px; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 20px; font-size: 14px; font-weight: 600; color: #10b981; margin-bottom: 16px; }
+        .task-spacer { flex: 1; }
+        .task-btn { width: 100%; padding: 12px; background: #10b981; border: none; color: #fff; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 14px; transition: all 0.2s; }
+        .task-btn:hover { background: #059669; }
 
         .tabs { display: flex; gap: 4px; margin-bottom: 24px; background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 4px; }
         .tab { padding: 10px 20px; border-radius: 8px; font-size: 14px; font-weight: 500; color: rgba(255,255,255,0.5); cursor: pointer; transition: all 0.2s; border: none; background: none; font-family: 'Inter', sans-serif; }
@@ -207,10 +220,7 @@
             <!-- DATA COLLECTIONS -->
             <div class="section" id="sec-collections">
                 <div class="page-header"><h1 class="page-title">Data Collections</h1><button class="btn btn-primary" onclick="openModal('collection')">+ New Collection</button></div>
-                <div class="card"><div class="card-body">
-                    <table><thead><tr><th>Title</th><th>Type</th><th>Language</th><th>Country</th><th>Progress</th><th>Status</th><th>Actions</th></tr></thead>
-                    <tbody id="collectionsTable"></tbody></table>
-                </div></div>
+                <div class="task-grid" id="collectionsGrid"></div>
             </div>
 
             <!-- COLLECTED DATA (Submissions) -->
@@ -334,21 +344,80 @@
             const res = await api('/api/v1/clients/data-collections/');
             const data = res?.results || res || [];
             if (!data || data.length === 0) {
-                document.getElementById('collectionsTable').innerHTML = '<tr><td colspan="7" class="empty"><div class="empty-title">No collections</div></td></tr>';
+                document.getElementById('collectionsGrid').innerHTML = '<div class="empty"><div class="empty-title">No collections</div><div class="empty-desc">Create your first data collection to get started.</div></div>';
                 return;
             }
-            document.getElementById('collectionsTable').innerHTML = data.map(c => {
+            const html = data.map(c => {
                 const progress = c.target_count > 0 ? Math.round((c.current_count / c.target_count) * 100) : 0;
-                return `<tr>
-                    <td style="font-weight:500;color:white;">${c.title}</td>
-                    <td>${c.data_type}</td>
-                    <td>${c.language_name || '-'}</td>
-                    <td>${c.country_name || '-'}</td>
-                    <td><div style="display:flex;align-items:center;gap:10px;"><div class="progress-bar" style="width:80px;"><div class="progress-fill" style="width:${progress}%;"></div></div><span style="font-size:12px;color:rgba(255,255,255,0.5);">${c.current_count}/${c.target_count}</span></div></td>
-                    <td><span class="badge badge-${c.status}">${c.status}</span></td>
-                    <td><button class="btn btn-danger" style="padding:6px 12px;font-size:12px;" onclick="deleteItem('/api/v1/clients/data-collections/${c.id}/')">Delete</button></td>
-                </tr>`;
+                return `
+                <div class="task-card" onclick="showClientCollectionDetail(${c.id})">
+                    <div class="task-type" style="color:#10b981;">${c.data_type}</div>
+                    <div class="task-title">${c.title}</div>
+                    <div class="task-desc">${(c.description || '').substring(0, 120)}${(c.description||'').length > 120 ? '...' : ''}</div>
+                    <div class="task-meta">
+                        <div class="task-meta-item">Language: <span>${c.language_name || '-'}</span></div>
+                        <div class="task-meta-item">Country: <span>${c.country_name || '-'}</span></div>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+                        <div class="progress-bar" style="flex:1;"><div class="progress-fill" style="width:${progress}%;"></div></div>
+                        <span style="font-size:12px;color:rgba(255,255,255,0.5);">${c.current_count}/${c.target_count}</span>
+                    </div>
+                    <div class="task-reward">$${c.price_per_item}/item</div>
+                    <div class="task-spacer"></div>
+                    <div style="display:flex;gap:8px;">
+                        <button class="task-btn" style="flex:1;background:#ef4444;" onclick="event.stopPropagation();deleteItem('/api/v1/clients/data-collections/${c.id}/')">Delete</button>
+                    </div>
+                </div>`;
             }).join('');
+            document.getElementById('collectionsGrid').innerHTML = html;
+        }
+
+        async function showClientCollectionDetail(id) {
+            const res = await api('/api/v1/clients/data-collections/' + id + '/');
+            if (!res) return;
+            const c = res;
+            const progress = c.target_count > 0 ? Math.round((c.current_count / c.target_count) * 100) : 0;
+            const modal = document.getElementById('modal');
+            document.getElementById('modalTitle').textContent = c.title;
+            document.getElementById('modalSubtitle').textContent = 'Collection Details';
+            document.getElementById('modalBody').innerHTML = `
+                <div style="display:flex;flex-direction:column;gap:16px;">
+                    <div style="font-size:14px;color:rgba(255,255,255,0.6);line-height:1.6;">${c.description || 'No description'}</div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                        <div style="background:rgba(255,255,255,0.04);padding:14px;border-radius:10px;">
+                            <div style="font-size:11px;color:rgba(255,255,255,0.4);text-transform:uppercase;margin-bottom:6px;">Data Type</div>
+                            <div style="font-size:15px;color:white;font-weight:600;">${c.data_type}</div>
+                        </div>
+                        <div style="background:rgba(255,255,255,0.04);padding:14px;border-radius:10px;">
+                            <div style="font-size:11px;color:rgba(255,255,255,0.4);text-transform:uppercase;margin-bottom:6px;">Status</div>
+                            <div style="font-size:15px;color:white;font-weight:600;">${c.status}</div>
+                        </div>
+                        <div style="background:rgba(255,255,255,0.04);padding:14px;border-radius:10px;">
+                            <div style="font-size:11px;color:rgba(255,255,255,0.4);text-transform:uppercase;margin-bottom:6px;">Language</div>
+                            <div style="font-size:15px;color:white;font-weight:600;">${c.language_name || '-'}</div>
+                        </div>
+                        <div style="background:rgba(255,255,255,0.04);padding:14px;border-radius:10px;">
+                            <div style="font-size:11px;color:rgba(255,255,255,0.4);text-transform:uppercase;margin-bottom:6px;">Country</div>
+                            <div style="font-size:15px;color:white;font-weight:600;">${c.country_name || '-'}</div>
+                        </div>
+                    </div>
+                    <div style="background:rgba(255,255,255,0.04);padding:14px;border-radius:10px;">
+                        <div style="font-size:11px;color:rgba(255,255,255,0.4);text-transform:uppercase;margin-bottom:6px;">Progress</div>
+                        <div style="display:flex;align-items:center;gap:12px;">
+                            <div style="flex:1;height:8px;background:rgba(255,255,255,0.08);border-radius:4px;overflow:hidden;">
+                                <div style="height:100%;width:${progress}%;background:#10b981;border-radius:4px;"></div>
+                            </div>
+                            <span style="font-size:13px;color:white;font-weight:600;">${c.current_count} / ${c.target_count}</span>
+                        </div>
+                    </div>
+                    <div style="background:rgba(255,255,255,0.04);padding:14px;border-radius:10px;">
+                        <div style="font-size:11px;color:rgba(255,255,255,0.4);text-transform:uppercase;margin-bottom:6px;">Price per item</div>
+                        <div style="font-size:15px;color:#10b981;font-weight:600;">$${c.price_per_item}</div>
+                    </div>
+                    ${c.instructions ? '<div style="background:rgba(255,255,255,0.04);padding:14px;border-radius:10px;"><div style="font-size:11px;color:rgba(255,255,255,0.4);text-transform:uppercase;margin-bottom:6px;">Instructions</div><div style="font-size:14px;color:rgba(255,255,255,0.75);line-height:1.6;">' + c.instructions + '</div></div>' : ''}
+                    <button onclick="closeModal()" style="width:100%;padding:12px;background:rgba(255,255,255,0.08);border:none;color:#94a3b8;border-radius:10px;cursor:pointer;font-size:14px;">Close</button>
+                </div>`;
+            modal.classList.add('open');
         }
 
         async function loadAnnotations() {

@@ -244,7 +244,7 @@ class DataCollectionViewSet(viewsets.ModelViewSet):
 
         serializer = DataCollectionSerializer(data=data)
         serializer.is_valid(raise_exception=True)
-        collection = serializer.save(created_by=request.user)
+        collection = serializer.save()
 
         from workers.models import Notification
         Notification.objects.create(
@@ -266,6 +266,6 @@ class DataSubmissionViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        return DataSubmission.objects.filter(
-            collection__created_by=self.request.user
-        ).select_related('worker__user', 'collection').order_by('-submitted_at')
+        return DataSubmission.objects.select_related(
+            'worker__user', 'collection'
+        ).order_by('-submitted_at')

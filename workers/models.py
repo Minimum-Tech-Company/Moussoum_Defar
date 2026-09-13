@@ -151,7 +151,6 @@ class DataCollection(models.Model):
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='active')
     instructions = models.TextField(blank=True)
     sample_data = models.JSONField(default=dict)
-    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='created_collections')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
