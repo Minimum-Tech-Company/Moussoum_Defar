@@ -11,6 +11,7 @@ from .serializers import (
 )
 from workers.models import DataCollection, DataSubmission
 from workers.serializers import DataCollectionSerializer, DataSubmissionSerializer
+from decimal import Decimal
 
 
 class RegisterView(viewsets.ViewSet):
@@ -288,13 +289,46 @@ class DataSubmissionViewSet(viewsets.ModelViewSet):
         collection.current_count += 1
         collection.save()
 
-        from workers.models import Notification
+        worker = submission.worker
+        worker.total_tasks += 1
+        if submission.quality_score is not None:
+            total = worker.total_tasks
+            worker.accuracy = ((worker.accuracy * (total - 1)) + submission.quality_score) / total
+        worker.save(update_fields=['total_tasks', 'accuracy'])
+
+        from workers.models import QualityLog
+        QualityLog.objects.create(
+            worker=worker,
+            submission=submission,
+            score=submission.quality_score or 0.0,
+            reviewer=request.user,
+            notes=submission.reviewer_notes
+        )
+        worker.calculate_quality_score()
+
+        amount = Decimal(str(collection.price_per_item))
+        worker.balance += amount
+        worker.save(update_fields=['balance'])
+
+        from workers.models import Payment, Notification
+        Payment.objects.create(
+            worker=worker,
+            amount=amount,
+            currency='USD',
+            method='mobile_money',
+            reference=f'collection-{collection.id}-sub-{submission.id}',
+            status='completed',
+            task_type='data_collection',
+            task_id=submission.id,
+            notes=f'Payment for approved submission to "{collection.title}"'
+        )
+
         Notification.objects.create(
-            user=submission.worker.user,
-            notification_type='task_completed',
-            title='Submission Approved',
-            message=f'Your submission to "{collection.title}" has been approved!',
-            data={'submission_id': submission.id, 'collection_id': collection.id}
+            user=worker.user,
+            notification_type='payment_received',
+            title='Payment Received',
+            message=f'You earned ${amount} for your contribution to "{collection.title}"!',
+            data={'submission_id': submission.id, 'collection_id': collection.id, 'amount': str(amount)}
         )
         return Response(DataSubmissionSerializer(submission).data)
 
