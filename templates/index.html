@@ -750,6 +750,46 @@
 
         .footer-social a:hover { background: rgba(255,255,255,0.08); color: white; }
 
+        /* ===== DEVELOPER PLAYGROUND ===== */
+        .devplay { background: #0a0f1a; padding: 100px 24px; }
+        .devplay-inner { max-width: 1200px; margin: 0 auto; }
+        .devplay-header { text-align: center; margin-bottom: 60px; }
+        .devplay-tag { display: inline-block; padding: 6px 16px; background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.2); border-radius: 20px; font-size: 12px; font-weight: 600; color: #10b981; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 16px; }
+        .devplay-title { font-size: 42px; font-weight: 700; color: white; margin: 0 0 16px 0; }
+        .devplay-sub { font-size: 18px; color: rgba(255,255,255,0.5); max-width: 600px; margin: 0 auto; }
+        .devplay-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 60px; }
+        .devplay-panel { background: rgba(15,23,42,0.6); border: 1px solid rgba(255,255,255,0.06); border-radius: 16px; overflow: hidden; }
+        .devplay-tabs { display: flex; gap: 0; border-bottom: 1px solid rgba(255,255,255,0.06); }
+        .devplay-tab { flex: 1; padding: 14px; background: none; border: none; color: rgba(255,255,255,0.4); font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s; font-family: 'Inter', sans-serif; }
+        .devplay-tab:hover { color: white; background: rgba(255,255,255,0.03); }
+        .devplay-tab.active { color: #10b981; background: rgba(16,185,129,0.06); border-bottom: 2px solid #10b981; }
+        .devplay-code { padding: 24px; font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 13px; line-height: 1.7; overflow-x: auto; }
+        .devplay-codeblock { color: rgba(255,255,255,0.7); white-space: pre; }
+        .devplay-codeblock .kw { color: #10b981; }
+        .devplay-codeblock .str { color: #fbbf24; }
+        .devplay-header-bar { display: flex; align-items: center; gap: 12px; padding: 16px 20px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+        .devplay-method { padding: 4px 10px; background: rgba(16,185,129,0.15); color: #10b981; border-radius: 6px; font-size: 12px; font-weight: 700; font-family: monospace; }
+        .devplay-url { flex: 1; font-family: monospace; font-size: 13px; color: rgba(255,255,255,0.6); }
+        .devplay-run { padding: 8px 20px; background: #10b981; border: none; color: white; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; font-family: 'Inter', sans-serif; }
+        .devplay-run:hover { background: #059669; }
+        .devplay-inputs { padding: 16px 20px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+        .devplay-inputs select, .devplay-inputs input { width: 100%; padding: 10px 14px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: white; font-size: 13px; font-family: monospace; margin-bottom: 8px; box-sizing: border-box; }
+        .devplay-inputs select option { background: #1e293b; color: white; }
+        .devplay-inputs input::placeholder { color: rgba(255,255,255,0.25); }
+        .devplay-response { padding: 0; }
+        .devplay-response-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+        .devplay-response-header span { font-size: 12px; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 0.05em; }
+        .devplay-status { padding: 2px 8px; border-radius: 4px; font-family: monospace; font-weight: 600; }
+        .devplay-status.ok { background: rgba(16,185,129,0.15); color: #10b981; }
+        .devplay-status.err { background: rgba(239,68,68,0.15); color: #ef4444; }
+        .devplay-status.loading { background: rgba(251,191,36,0.15); color: #fbbf24; }
+        .devplay-response-body { padding: 20px; margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 12px; line-height: 1.6; color: rgba(255,255,255,0.6); max-height: 300px; overflow: auto; white-space: pre-wrap; }
+        .devplay-features { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+        .devplay-feat { text-align: center; padding: 32px 20px; background: rgba(15,23,42,0.4); border: 1px solid rgba(255,255,255,0.06); border-radius: 14px; }
+        .devplay-feat-icon { font-size: 28px; margin-bottom: 12px; }
+        .devplay-feat h4 { font-size: 15px; color: white; margin: 0 0 8px 0; }
+        .devplay-feat p { font-size: 13px; color: rgba(255,255,255,0.4); margin: 0; line-height: 1.5; }
+
         /* ===== RESPONSIVE ===== */
         @media (max-width: 768px) {
             .navbar { padding: 0 20px; }
@@ -821,6 +861,7 @@
             <div class="hero-actions">
                 <a href="/templates/client-register.html" class="btn-primary">Get Started Free →</a>
                 <a href="/templates/worker-register.html" class="btn-secondary">Join as a Worker</a>
+                <a href="/api/docs/" class="btn-secondary" target="_blank">API Docs ↗</a>
             </div>
         </div>
 
@@ -903,6 +944,97 @@
             <div class="cta-actions">
                 <a href="/templates/client-register.html" class="btn-primary">Start Free Trial</a>
                 <a href="/templates/worker-register.html" class="btn-secondary">Join as Worker</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Developer Playground -->
+    <section class="devplay" id="api">
+        <div class="devplay-inner">
+            <div class="devplay-header">
+                <div class="devplay-tag">For Developers</div>
+                <h2 class="devplay-title">Try our API in real time</h2>
+                <p class="devplay-sub">Test African language benchmarks, submit data, and explore the API — directly from your browser.</p>
+            </div>
+
+            <div class="devplay-grid">
+                <!-- Left: Code examples -->
+                <div class="devplay-panel">
+                    <div class="devplay-tabs">
+                        <button class="devplay-tab active" onclick="switchDevTab(0, this)">Evaluate Model</button>
+                        <button class="devplay-tab" onclick="switchDevTab(1, this)">List Countries</button>
+                        <button class="devplay-tab" onclick="switchDevTab(2, this)">Register Worker</button>
+                    </div>
+                    <div class="devplay-code" id="devplayCode">
+                        <div class="devplay-codeblock" id="codeBlock0">
+<span class="kw">curl</span> -X POST https://moussoum-defar.com/api/v1/evaluations/test_quick/ \
+  -H <span class="str">"Content-Type: application/json"</span> \
+  -d '{
+    <span class="str">"model_name"</span>: <span class="str">"gpt-4"</span>,
+    <span class="str">"country_code"</span>: <span class="str">"SN"</span>,
+    <span class="str">"language_code"</span>: <span class="str">"wo"</span>
+  }'</div>
+                        <div class="devplay-codeblock" id="codeBlock1" style="display:none">
+<span class="kw">curl</span> https://moussoum-defar.com/api/v1/benchmarks/ \
+  -H <span class="str">"Accept: application/json"</span></div>
+                        <div class="devplay-codeblock" id="codeBlock2" style="display:none">
+<span class="kw">curl</span> -X POST https://moussoum-defar.com/api/v1/workers/auth/register/ \
+  -H <span class="str">"Content-Type: application/json"</span> \
+  -d '{
+    <span class="str">"username"</span>: <span class="str">"myname"</span>,
+    <span class="str">"email"</span>: <span class="str">"me@example.com"</span>,
+    <span class="str">"password"</span>: <span class="str">"secure123!"</span>,
+    <span class="str">"languages"</span>: [<span class="str">"Wolof"</span>, <span class="str">"French"</span>]
+  }'</div>
+                    </div>
+                </div>
+
+                <!-- Right: Interactive playground -->
+                <div class="devplay-panel">
+                    <div class="devplay-header-bar">
+                        <span class="devplay-method">GET</span>
+                        <span class="devplay-url">/api/v1/benchmarks/</span>
+                        <button class="devplay-run" onclick="runDevPlayground()">▶ Run</button>
+                    </div>
+                    <div class="devplay-inputs">
+                        <select id="devplayEndpoint" onchange="updateDevplayUrl()">
+                            <option value="GET /api/v1/benchmarks/">GET /benchmarks/</option>
+                            <option value="GET /api/v1/benchmarks/1/">GET /benchmarks/{id}/</option>
+                            <option value="POST /api/v1/evaluations/test_quick/">POST /evaluations/test_quick/</option>
+                        </select>
+                        <input type="text" id="devplayBody" placeholder='{"model_name": "gpt-4", "country_code": "SN"}' style="display:none;">
+                    </div>
+                    <div class="devplay-response" id="devplayResponse">
+                        <div class="devplay-response-header">
+                            <span>Response</span>
+                            <span class="devplay-status" id="devplayStatus">—</span>
+                        </div>
+                        <pre class="devplay-response-body" id="devplayResponseBody">// Click "Run" to see the API response</pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="devplay-features">
+                <div class="devplay-feat">
+                    <div class="devplay-feat-icon">📦</div>
+                    <h4>REST API</h4>
+                    <p>Full CRUD on collections, annotations, RLHF, and submissions.</p>
+                </div>
+                <div class="devplay-feat">
+                    <div class="devplay-feat-icon">🔐</div>
+                    <h4>JWT Auth</h4>
+                    <p>Secure token-based authentication for workers and clients.</p>
+                </div>
+                <div class="devplay-feat">
+                    <div class="devplay-feat-icon">🌍</div>
+                    <h4>16 Languages</h4>
+                    <p>Wolof, Yoruba, Swahili, Amharic, and 12 more African languages.</p>
+                </div>
+                <div class="devplay-feat">
+                    <div class="devplay-feat-icon">📊</div>
+                    <h4>Webhooks</h4>
+                    <p>Real-time notifications for task completions and payments.</p>
+                </div>
             </div>
         </div>
     </section>

@@ -8,7 +8,7 @@ from .models import Client, Subscription
 from .serializers import (
     ClientSerializer, ClientCreateSerializer, SubscriptionSerializer
 )
-from workers.models import DataCollection
+from workers.models import DataCollection, DataSubmission
 from workers.serializers import DataCollectionSerializer, DataSubmissionSerializer
 
 
