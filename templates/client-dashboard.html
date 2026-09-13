@@ -496,8 +496,16 @@
                 const dataType = s.collection?.data_type || '-';
                 let content = s.transcription || '';
                 if (s.file) {
-                    const fileName = s.file.split('/').pop();
-                    content += (content ? ' | ' : '') + '<a href="' + s.file + '" target="_blank" style="color:#60a5fa;">📎 ' + fileName + '</a>';
+                    const ext = s.file.split('.').pop().toLowerCase();
+                    if (['mp3','wav','ogg','webm','m4a','aac'].includes(ext)) {
+                        content += (content ? '<br>' : '') + '<audio controls style="height:32px;max-width:280px;">' + '<source src="' + s.file + '" type="audio/' + ext + '">' + 'Your browser does not support audio.' + '</audio>';
+                    } else if (['mp4','webm','avi','mov'].includes(ext)) {
+                        content += (content ? '<br>' : '') + '<video controls style="height:80px;max-width:280px;">' + '<source src="' + s.file + '">' + '</video>';
+                    } else if (['jpg','jpeg','png','gif','webp'].includes(ext)) {
+                        content += (content ? '<br>' : '') + '<img src="' + s.file + '" style="height:60px;border-radius:6px;">';
+                    } else {
+                        content += (content ? ' | ' : '') + '<a href="' + s.file + '" target="_blank" style="color:#60a5fa;">📎 ' + s.file.split('/').pop() + '</a>';
+                    }
                 }
                 if (!content) content = '<span style="color:rgba(255,255,255,0.3);">Empty</span>';
                 const date = new Date(s.submitted_at).toLocaleDateString();
@@ -505,7 +513,7 @@
                     <td style="font-weight:500;color:white;">${workerName}</td>
                     <td>${collTitle}</td>
                     <td><span class="task-type collection" style="display:inline-block;margin:0;">${dataType}</span></td>
-                    <td style="max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${content}</td>
+                    <td style="max-width:320px;">${content}</td>
                     <td><span class="badge badge-${s.status}">${s.status}</span></td>
                     <td>${date}</td>
                 </tr>`;
