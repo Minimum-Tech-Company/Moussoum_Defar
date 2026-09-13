@@ -3,6 +3,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
+from django.utils import timezone
 from rest_framework_simplejwt.tokens import RefreshToken
 from .models import Client, Subscription
 from .serializers import (
@@ -269,3 +270,50 @@ class DataSubmissionViewSet(viewsets.ModelViewSet):
         return DataSubmission.objects.select_related(
             'worker__user', 'collection'
         ).order_by('-submitted_at')
+
+    @action(detail=True, methods=['post'])
+    def approve(self, request, pk=None):
+        submission = self.get_object()
+        if submission.status == 'approved':
+            return Response({'detail': 'Already approved'}, status=400)
+        submission.status = 'approved'
+        submission.reviewed_at = timezone.now()
+        submission.reviewer_notes = request.data.get('notes', '')
+        score = request.data.get('quality_score')
+        if score is not None:
+            submission.quality_score = float(score)
+        submission.save()
+
+        collection = submission.collection
+        collection.current_count += 1
+        collection.save()
+
+        from workers.models import Notification
+        Notification.objects.create(
+            user=submission.worker.user,
+            notification_type='task_completed',
+            title='Submission Approved',
+            message=f'Your submission to "{collection.title}" has been approved!',
+            data={'submission_id': submission.id, 'collection_id': collection.id}
+        )
+        return Response(DataSubmissionSerializer(submission).data)
+
+    @action(detail=True, methods=['post'])
+    def reject(self, request, pk=None):
+        submission = self.get_object()
+        if submission.status == 'rejected':
+            return Response({'detail': 'Already rejected'}, status=400)
+        submission.status = 'rejected'
+        submission.reviewed_at = timezone.now()
+        submission.reviewer_notes = request.data.get('notes', 'Rejected')
+        submission.save()
+
+        from workers.models import Notification
+        Notification.objects.create(
+            user=submission.worker.user,
+            notification_type='task_assigned',
+            title='Submission Rejected',
+            message=f'Your submission to "{submission.collection.title}" was rejected. {submission.reviewer_notes}',
+            data={'submission_id': submission.id}
+        )
+        return Response(DataSubmissionSerializer(submission).data)

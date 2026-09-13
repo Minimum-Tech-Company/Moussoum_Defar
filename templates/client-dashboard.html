@@ -233,7 +233,7 @@
                     <div class="stat-card"><div class="stat-card-label">Rejected</div><div class="stat-card-value red" id="sRejectedSubs">0</div></div>
                 </div>
                 <div class="card"><div class="card-body">
-                    <table><thead><tr><th>Worker</th><th>Collection</th><th>Type</th><th>Content</th><th>Status</th><th>Submitted</th></tr></thead>
+                    <table><thead><tr><th>Worker</th><th>Collection</th><th>Type</th><th>Content</th><th>Status</th><th>Submitted</th><th>Actions</th></tr></thead>
                     <tbody id="submissionsTable"></tbody></table>
                 </div></div>
             </div>
@@ -516,6 +516,7 @@
                     <td style="max-width:320px;">${content}</td>
                     <td><span class="badge badge-${s.status}">${s.status}</span></td>
                     <td>${date}</td>
+                    <td>${s.status === 'pending' ? '<button style="padding:4px 10px;background:#10b981;border:none;color:white;border-radius:6px;cursor:pointer;font-size:12px;margin-right:4px;" onclick="approveSubmission(' + s.id + ')">Approve</button><button style="padding:4px 10px;background:#ef4444;border:none;color:white;border-radius:6px;cursor:pointer;font-size:12px;" onclick="rejectSubmission(' + s.id + ')">Reject</button>' : '<span style="color:rgba(255,255,255,0.3);font-size:12px;">—</span>'}</td>
                 </tr>`;
             }).join('');
         }
@@ -755,6 +756,21 @@
             localStorage.removeItem('clientToken');
             localStorage.removeItem('clientData');
             window.location.href = '/templates/client-login.html';
+        }
+
+        async function approveSubmission(id) {
+            const notes = prompt('Optional approval notes:') || '';
+            const res = await api('/api/v1/clients/submissions/' + id + '/approve/', { method: 'POST', body: JSON.stringify({ notes }) });
+            if (res && !res.detail) { alert('Approved!'); loadSubmissions(); loadOverview(); }
+            else alert('Error: ' + JSON.stringify(res));
+        }
+
+        async function rejectSubmission(id) {
+            const notes = prompt('Rejection reason (required):');
+            if (!notes) return;
+            const res = await api('/api/v1/clients/submissions/' + id + '/reject/', { method: 'POST', body: JSON.stringify({ notes }) });
+            if (res && !res.detail) { alert('Rejected.'); loadSubmissions(); loadOverview(); }
+            else alert('Error: ' + JSON.stringify(res));
         }
 
         // Init
