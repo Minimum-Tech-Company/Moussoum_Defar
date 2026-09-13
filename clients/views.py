@@ -219,6 +219,20 @@ class ClientViewSet(viewsets.ModelViewSet):
 
         return Response(SubscriptionSerializer(subscription).data)
 
+    @action(detail=False, methods=['post'])
+    def deposit(self, request):
+        client, _ = Client.objects.get_or_create(user=request.user)
+        from decimal import Decimal
+        try:
+            amount = Decimal(str(request.data.get('amount', 0)))
+        except Exception:
+            return Response({'error': 'Invalid amount'}, status=status.HTTP_400_BAD_REQUEST)
+        if amount < 10:
+            return Response({'error': 'Minimum deposit is $10'}, status=status.HTTP_400_BAD_REQUEST)
+        client.balance += amount
+        client.save(update_fields=['balance'])
+        return Response({'balance': str(client.balance), 'deposited': str(amount)}, status=status.HTTP_200_OK)
+
 
 class DataCollectionViewSet(viewsets.ModelViewSet):
     serializer_class = DataCollectionSerializer

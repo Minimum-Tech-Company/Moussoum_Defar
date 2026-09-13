@@ -191,7 +191,14 @@
             <!-- OVERVIEW -->
             <div class="section active" id="sec-overview">
                 <div class="page-header">
-                    <h1 class="page-title">Dashboard</h1>
+                    <div style="display:flex;align-items:center;gap:16px;">
+                        <h1 class="page-title">Dashboard</h1>
+                        <div style="display:flex;align-items:center;gap:8px;padding:8px 16px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.2);border-radius:10px;">
+                            <span style="font-size:13px;color:rgba(255,255,255,0.5);">Balance:</span>
+                            <span id="clientBalance" style="font-size:18px;font-weight:700;color:#10b981;">$0.00</span>
+                            <button onclick="depositFunds()" style="padding:6px 12px;background:#10b981;border:none;color:white;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;">+ Deposit</button>
+                        </div>
+                    </div>
                     <div class="notif-wrapper" id="notifWrapper">
                         <div class="notif-bell" onclick="toggleNotifPanel()">🔔<div class="notif-badge" id="notifBadge">0</div></div>
                         <div class="notif-panel" id="notifPanel">
@@ -326,6 +333,21 @@
 
         function langOpts() { return LANGUAGES.map(l => `<option value="${l.code}">${l.name}</option>`).join(''); }
         function countryOpts() { return COUNTRIES.map(c => `<option value="${c.code}">${c.name}</option>`).join(''); }
+
+        async function loadClientProfile() {
+            const res = await api('/api/v1/clients/profile/me/');
+            if (res) document.getElementById('clientBalance').textContent = '$' + parseFloat(res.balance || 0).toFixed(2);
+        }
+
+        async function depositFunds() {
+            const amount = prompt('Enter deposit amount (minimum $10):');
+            if (!amount) return;
+            const res = await api('/api/v1/clients/profile/deposit/', { method: 'POST', body: JSON.stringify({ amount: parseFloat(amount) }) });
+            if (res && res.balance) {
+                document.getElementById('clientBalance').textContent = '$' + parseFloat(res.balance).toFixed(2);
+                alert('Deposited $' + res.deposited + '. New balance: $' + res.balance);
+            } else alert('Error: ' + JSON.stringify(res));
+        }
 
         async function loadOverview() {
             const [collections, annotations, rlhf, synthetic] = await Promise.all([
@@ -680,7 +702,7 @@
             const res = await fetch(url, { method: 'POST', headers, body: JSON.stringify(data) });
             if (res.ok) {
                 closeModal();
-                if (type === 'collection') loadCollections();
+                if (type === 'collection') { loadCollections(); loadClientProfile(); }
                 else if (type === 'annotation') loadAnnotations();
                 else if (type === 'rlhf') loadRLHF();
                 else if (type === 'synthetic') loadSynthetic();
@@ -774,6 +796,7 @@
         }
 
         // Init
+        loadClientProfile();
         loadOverview();
         loadCollections();
         loadSubmissions();

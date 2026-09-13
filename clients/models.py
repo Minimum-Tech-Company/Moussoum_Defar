@@ -19,6 +19,7 @@ class Client(models.Model):
     monthly_evaluations = models.IntegerField(default=0)
     max_evaluations = models.IntegerField(default=5)
     is_verified = models.BooleanField(default=False)
+    balance = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

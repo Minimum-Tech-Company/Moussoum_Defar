@@ -17,7 +17,7 @@ class ClientSerializer(serializers.ModelSerializer):
         model = Client
         fields = [
             'id', 'user', 'company_name', 'company_description',
-            'website', 'plan', 'plan_display', 'monthly_evaluations',
+            'website', 'plan', 'plan_display', 'balance', 'monthly_evaluations',
             'max_evaluations', 'is_verified', 'created_at', 'updated_at'
         ]
 
