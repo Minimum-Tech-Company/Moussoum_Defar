@@ -192,7 +192,7 @@
                 </div>
                 <div class="form-group">
                     <label class="form-label">Languages (comma-separated codes)</label>
-                    <input type="text" class="form-input" id="languages" placeholder="e.g. wolof, french">
+                    <input type="text" class="form-input" id="languages" placeholder="e.g. Wolof, French, English">
                 </div>
                 <div class="form-group">
                     <label class="form-label">Bio</label>
@@ -264,7 +264,7 @@
             document.getElementById('phone').value = data.phone || '';
             document.getElementById('country').value = data.country?.id || '';
             document.getElementById('bio').value = data.bio || '';
-            document.getElementById('languages').value = (data.languages || []).map(l => l.code).join(', ');
+            document.getElementById('languages').value = (data.languages || []).map(l => l.name).join(', ');
 
             document.getElementById('statLevel').textContent = data.level || 1;
             document.getElementById('statScore').textContent = (data.quality_score || 0).toFixed(1);
