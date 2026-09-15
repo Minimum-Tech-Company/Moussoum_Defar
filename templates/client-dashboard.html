@@ -519,14 +519,15 @@
                 let content = s.transcription || '';
                 if (s.file) {
                     const ext = s.file.split('.').pop().toLowerCase();
+                    const dlBtn = ' <a href="' + s.file + '" download style="display:inline-block;padding:2px 8px;background:rgba(255,255,255,0.1);border-radius:4px;color:#60a5fa;font-size:11px;text-decoration:none;margin-left:4px;">⬇ Download</a>';
                     if (['mp3','wav','ogg','webm','m4a','aac'].includes(ext)) {
-                        content += (content ? '<br>' : '') + '<audio controls style="height:32px;max-width:280px;">' + '<source src="' + s.file + '" type="audio/' + ext + '">' + 'Your browser does not support audio.' + '</audio>';
+                        content += (content ? '<br>' : '') + '<audio controls style="height:32px;max-width:280px;">' + '<source src="' + s.file + '" type="audio/' + ext + '">' + 'Your browser does not support audio.' + '</audio>' + dlBtn;
                     } else if (['mp4','webm','avi','mov'].includes(ext)) {
-                        content += (content ? '<br>' : '') + '<video controls style="height:80px;max-width:280px;">' + '<source src="' + s.file + '">' + '</video>';
+                        content += (content ? '<br>' : '') + '<video controls style="height:80px;max-width:280px;">' + '<source src="' + s.file + '">' + '</video>' + dlBtn;
                     } else if (['jpg','jpeg','png','gif','webp'].includes(ext)) {
-                        content += (content ? '<br>' : '') + '<img src="' + s.file + '" style="height:60px;border-radius:6px;">';
+                        content += (content ? '<br>' : '') + '<a href="' + s.file + '" target="_blank"><img src="' + s.file + '" style="height:60px;border-radius:6px;"></a>' + dlBtn;
                     } else {
-                        content += (content ? ' | ' : '') + '<a href="' + s.file + '" target="_blank" style="color:#60a5fa;">📎 ' + s.file.split('/').pop() + '</a>';
+                        content += (content ? ' | ' : '') + '<a href="' + s.file + '" download style="color:#60a5fa;">📎 ' + s.file.split('/').pop() + '</a>';
                     }
                 }
                 if (!content) content = '<span style="color:rgba(255,255,255,0.3);">Empty</span>';
