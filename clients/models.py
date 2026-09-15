@@ -15,6 +15,7 @@ class Client(models.Model):
     company_name = models.CharField(max_length=200)
     company_description = models.TextField(blank=True)
     website = models.URLField(blank=True)
+    company_logo = models.ImageField(upload_to='company_logos/%Y/%m/', blank=True, null=True)
     plan = models.CharField(max_length=20, choices=PLAN_CHOICES, default='free')
     monthly_evaluations = models.IntegerField(default=0)
     max_evaluations = models.IntegerField(default=5)

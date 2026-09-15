@@ -17,7 +17,7 @@ class ClientSerializer(serializers.ModelSerializer):
         model = Client
         fields = [
             'id', 'user', 'company_name', 'company_description',
-            'website', 'plan', 'plan_display', 'monthly_evaluations',
+            'website', 'company_logo', 'plan', 'plan_display', 'monthly_evaluations',
             'max_evaluations', 'is_verified', 'created_at', 'updated_at'
         ]
 
@@ -25,7 +25,7 @@ class ClientSerializer(serializers.ModelSerializer):
 class ClientCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Client
-        fields = ['company_name', 'company_description', 'website']
+        fields = ['company_name', 'company_description', 'website', 'company_logo']
 
 
 class SubscriptionSerializer(serializers.ModelSerializer):

@@ -150,12 +150,30 @@ class ClientViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['get'])
     def me(self, request):
         client, created = Client.objects.get_or_create(user=request.user)
-        serializer = ClientSerializer(client)
-        return Response(serializer.data)
+        from workers.models import DataCollection, DataSubmission
+        collections_count = DataCollection.objects.count()
+        submissions_count = DataSubmission.objects.count()
+        data = ClientSerializer(client).data
+        data['collections_count'] = collections_count
+        data['submissions_count'] = submissions_count
+        return Response(data)
 
     @action(detail=False, methods=['put'])
     def update_profile(self, request):
         client, created = Client.objects.get_or_create(user=request.user)
+
+        # Handle username update
+        username = request.data.get('username', '')
+        if username and username != request.user.username:
+            from django.contrib.auth.models import User
+            if User.objects.filter(username=username).exclude(id=request.user.id).exists():
+                return Response(
+                    {'error': 'Username already exists'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            request.user.username = username
+            request.user.save(update_fields=['username'])
+
         serializer = ClientCreateSerializer(client, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
@@ -262,7 +280,7 @@ class DataCollectionViewSet(viewsets.ModelViewSet):
 
         serializer = DataCollectionSerializer(data=data)
         serializer.is_valid(raise_exception=True)
-        collection = serializer.save()
+        collection = serializer.save(created_by=request.user)
 
         from workers.models import Notification
         Notification.objects.create(

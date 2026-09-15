@@ -101,6 +101,18 @@ class WorkerProfileView(viewsets.ViewSet):
 
         data = request.data.copy()
 
+        # Handle username update
+        username = data.get('username', '')
+        if username and username != request.user.username:
+            from django.contrib.auth.models import User
+            if User.objects.filter(username=username).exclude(id=request.user.id).exists():
+                return Response(
+                    {'error': 'Username already exists'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            request.user.username = username
+            request.user.save(update_fields=['username'])
+
         # Handle languages from comma-separated string
         languages_raw = data.get('languages', '')
         if isinstance(languages_raw, str) and languages_raw.strip():
@@ -115,12 +127,9 @@ class WorkerProfileView(viewsets.ViewSet):
                     lang = Language.objects.filter(code__iexact=name).first()
                     if lang:
                         lang_ids.append(lang.id)
-            # Remove old languages value and set new IDs
             data.pop('languages', None)
-            # Set languages as list of IDs directly on the worker
             worker.languages.set(lang_ids)
         elif isinstance(languages_raw, list):
-            # Already a list, pass through
             pass
         else:
             data.pop('languages', None)
@@ -129,6 +138,9 @@ class WorkerProfileView(viewsets.ViewSet):
         country = data.get('country', '')
         if country == '' or country is None:
             data.pop('country', None)
+
+        # Remove username from data since we handled it above
+        data.pop('username', None)
 
         serializer = WorkerUpdateSerializer(worker, data=data, partial=True)
         serializer.is_valid(raise_exception=True)

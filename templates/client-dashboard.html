@@ -177,6 +177,7 @@
             </nav>
             <div class="sidebar-footer">
                 <a onclick="logout()" class="sidebar-link" style="margin-bottom:12px;color:rgba(255,100,100,0.6);cursor:pointer;"><span class="icon">🚪</span> Logout</a>
+                <a href="/templates/client-profile.html" class="sidebar-link" style="margin-bottom:12px;cursor:pointer;"><span class="icon">🏢</span> Company Profile</a>
                 <div class="sidebar-user">
                     <div class="user-avatar" id="userInitial">C</div>
                     <div class="user-info">
@@ -360,6 +361,7 @@
                         <div class="task-meta-item">Language: <span>${c.language_name || '-'}</span></div>
                         <div class="task-meta-item">Country: <span>${c.country_name || '-'}</span></div>
                     </div>
+                    ${c.created_by_name ? '<div style="font-size:12px;color:rgba(255,255,255,0.4);margin-bottom:8px;">🏢 ' + c.created_by_name + '</div>' : ''}
                     <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
                         <div class="progress-bar" style="flex:1;"><div class="progress-fill" style="width:${progress}%;"></div></div>
                         <span style="font-size:12px;color:rgba(255,255,255,0.5);">${c.current_count}/${c.target_count}</span>

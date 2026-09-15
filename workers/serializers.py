@@ -133,6 +133,7 @@ class DataCollectionSerializer(serializers.ModelSerializer):
     country_name = serializers.CharField(source='country.name', read_only=True, default='')
     progress_percentage = serializers.ReadOnlyField()
     is_complete = serializers.ReadOnlyField()
+    created_by_name = serializers.SerializerMethodField()
 
     class Meta:
         model = DataCollection
@@ -141,9 +142,19 @@ class DataCollectionSerializer(serializers.ModelSerializer):
             'language_name', 'country_name',
             'target_count', 'current_count', 'status',
             'instructions', 'progress_percentage', 'is_complete',
-            'created_at', 'updated_at'
+            'created_by_name', 'created_at', 'updated_at'
         ]
         read_only_fields = ['current_count', 'created_at', 'updated_at']
+
+    def get_created_by_name(self, obj):
+        if obj.created_by:
+            from clients.models import Client
+            try:
+                client = Client.objects.get(user=obj.created_by)
+                return client.company_name
+            except Client.DoesNotExist:
+                return obj.created_by.username
+        return ''
 
 
 class DataSubmissionSerializer(serializers.ModelSerializer):

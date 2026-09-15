@@ -318,6 +318,7 @@
                     <div class="task-type collection">${c.data_type}</div>
                     <div class="task-title">${c.title}</div>
                     <div class="task-desc">${c.description.substring(0, 120)}...</div>
+                    ${c.created_by_name ? '<div style="font-size:12px;color:rgba(255,255,255,0.4);margin-bottom:8px;">🏢 ' + c.created_by_name + '</div>' : ''}
                     <div class="task-meta">
                         <div class="task-meta-item">Language: <span>${c.language_name || '-'}</span></div>
                         <div class="task-meta-item">Country: <span>${c.country_name || '-'}</span></div>
