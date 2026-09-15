@@ -239,6 +239,13 @@
                     <div class="stat-card"><div class="stat-card-label">Approved</div><div class="stat-card-value green" id="sApprovedSubs">0</div></div>
                     <div class="stat-card"><div class="stat-card-label">Rejected</div><div class="stat-card-value red" id="sRejectedSubs">0</div></div>
                 </div>
+                <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
+                    <a href="/api/v1/clients/submissions/download-all/" style="padding:8px 16px;background:#3b82f6;color:white;border-radius:8px;text-decoration:none;font-size:13px;font-weight:500;">⬇ Download All Files (ZIP)</a>
+                    <a href="/api/v1/clients/submissions/download-all/?data_type=audio" style="padding:8px 16px;background:#8b5cf6;color:white;border-radius:8px;text-decoration:none;font-size:13px;font-weight:500;">🎵 Audio Only</a>
+                    <a href="/api/v1/clients/submissions/download-all/?data_type=image" style="padding:8px 16px;background:#f59e0b;color:white;border-radius:8px;text-decoration:none;font-size:13px;font-weight:500;">🖼 Images Only</a>
+                    <a href="/api/v1/clients/submissions/download-all/?data_type=video" style="padding:8px 16px;background:#ef4444;color:white;border-radius:8px;text-decoration:none;font-size:13px;font-weight:500;">🎬 Videos Only</a>
+                    <a href="/api/v1/clients/submissions/download-all/?status=approved" style="padding:8px 16px;background:#10b981;color:white;border-radius:8px;text-decoration:none;font-size:13px;font-weight:500;">✅ Approved Only</a>
+                </div>
                 <div class="card"><div class="card-body">
                     <table><thead><tr><th>Worker</th><th>Collection</th><th>Type</th><th>Content</th><th>Status</th><th>Submitted</th><th>Actions</th></tr></thead>
                     <tbody id="submissionsTable"></tbody></table>

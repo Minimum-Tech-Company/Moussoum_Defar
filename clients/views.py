@@ -1,3 +1,6 @@
+import io
+import zipfile
+from django.http import StreamingHttpResponse
 from rest_framework import viewsets, status, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -365,3 +368,38 @@ class DataSubmissionViewSet(viewsets.ModelViewSet):
             data={'submission_id': submission.id}
         )
         return Response(DataSubmissionSerializer(submission).data)
+
+    @action(detail=False, methods=['get'], url_path='download-all')
+    def download_all(self, request):
+        data_type = request.query_params.get('data_type')
+        collection_id = request.query_params.get('collection_id')
+        status_filter = request.query_params.get('status')
+
+        qs = DataSubmission.objects.select_related('collection').filter(file__isnull=False).exclude(file='')
+
+        if data_type:
+            qs = qs.filter(collection__data_type=data_type)
+        if collection_id:
+            qs = qs.filter(collection_id=collection_id)
+        if status_filter:
+            qs = qs.filter(status=status_filter)
+
+        if not qs.exists():
+            return Response({'error': 'No files found'}, status=404)
+
+        zip_buffer = io.BytesIO()
+        with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zf:
+            for sub in qs:
+                if sub.file:
+                    try:
+                        filename = sub.file.name
+                        content = sub.file.read()
+                        zf.writestr(filename, content)
+                    except Exception:
+                        continue
+
+        zip_buffer.seek(0)
+        response = StreamingHttpResponse(zip_buffer, content_type='application/zip')
+        filename = f'moussoum_data_{data_type or "all"}.zip'
+        response['Content-Disposition'] = f'attachment; filename="{filename}"'
+        return response
