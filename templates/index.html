@@ -961,21 +961,16 @@
                 <!-- Left: Code examples -->
                 <div class="devplay-panel">
                     <div class="devplay-tabs">
-                        <button class="devplay-tab active" onclick="switchDevTab(0, this)">Evaluate Model</button>
-                        <button class="devplay-tab" onclick="switchDevTab(1, this)">List Countries</button>
+                        <button class="devplay-tab active" onclick="switchDevTab(0, this)">Benchmarks</button>
+                        <button class="devplay-tab" onclick="switchDevTab(1, this)">Collections</button>
                         <button class="devplay-tab" onclick="switchDevTab(2, this)">Register Worker</button>
                     </div>
                     <div class="devplay-code" id="devplayCode">
                         <div class="devplay-codeblock" id="codeBlock0">
-<span class="kw">curl</span> -X POST https://moussoum-defar.com/api/v1/evaluations/test_quick/ \
-  -H <span class="str">"Content-Type: application/json"</span> \
-  -d '{
-    <span class="str">"model_name"</span>: <span class="str">"gpt-4"</span>,
-    <span class="str">"country_code"</span>: <span class="str">"SN"</span>,
-    <span class="str">"language_code"</span>: <span class="str">"wo"</span>
-  }'</div>
-                        <div class="devplay-codeblock" id="codeBlock1" style="display:none">
 <span class="kw">curl</span> https://moussoum-defar.com/api/v1/benchmarks/ \
+  -H <span class="str">"Accept: application/json"</span></div>
+                        <div class="devplay-codeblock" id="codeBlock1" style="display:none">
+<span class="kw">curl</span> https://moussoum-defar.com/api/v1/workers/collections/ \
   -H <span class="str">"Accept: application/json"</span></div>
                         <div class="devplay-codeblock" id="codeBlock2" style="display:none">
 <span class="kw">curl</span> -X POST https://moussoum-defar.com/api/v1/workers/auth/register/ \
@@ -1000,7 +995,9 @@
                         <select id="devplayEndpoint" onchange="updateDevplayUrl()">
                             <option value="GET /api/v1/benchmarks/">GET /benchmarks/</option>
                             <option value="GET /api/v1/benchmarks/1/">GET /benchmarks/{id}/</option>
-                            <option value="POST /api/v1/evaluations/test_quick/">POST /evaluations/test_quick/</option>
+                            <option value="GET /api/v1/workers/collections/">GET /workers/collections/</option>
+                            <option value="GET /api/v1/workers/languages/">GET /workers/languages/</option>
+                            <option value="GET /api/v1/workers/countries/">GET /workers/countries/</option>
                         </select>
                         <input type="text" id="devplayBody" placeholder='{"model_name": "gpt-4", "country_code": "SN"}' style="display:none;">
                     </div>
@@ -1075,10 +1072,66 @@
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>© 2024 Moussoum Defar. Made in Africa, for Africa.</p>
+                <p>© 2026 Moussoum Defar. Made in Africa, for Africa.</p>
                 <div class="footer-social"><a href="#">X</a><a href="#">in</a><a href="#">GH</a></div>
             </div>
         </div>
     </footer>
+    <script>
+        function switchDevTab(idx, btn) {
+            document.querySelectorAll('.devplay-tab').forEach(t => t.classList.remove('active'));
+            btn.classList.add('active');
+            document.querySelectorAll('.devplay-codeblock').forEach(b => b.style.display = 'none');
+            document.getElementById('codeBlock' + idx).style.display = 'block';
+        }
+
+        function updateDevplayUrl() {
+            const sel = document.getElementById('devplayEndpoint');
+            const parts = sel.value.split(' ');
+            const method = parts[0];
+            const url = parts.slice(1).join(' ');
+            document.querySelector('.devplay-method').textContent = method;
+            document.querySelector('.devplay-method').className = 'devplay-method';
+            document.querySelector('.devplay-url').textContent = url;
+            const body = document.getElementById('devplayBody');
+            body.style.display = method === 'POST' ? 'block' : 'none';
+        }
+
+        async function runDevPlayground() {
+            const sel = document.getElementById('devplayEndpoint');
+            const parts = sel.value.split(' ');
+            const method = parts[0];
+            const url = parts[1];
+            const statusEl = document.getElementById('devplayStatus');
+            const bodyEl = document.getElementById('devplayResponseBody');
+            const bodyInput = document.getElementById('devplayBody');
+
+            statusEl.textContent = '...';
+            statusEl.className = 'devplay-status loading';
+            bodyEl.textContent = 'Loading...';
+
+            const opts = { method, headers: { 'Content-Type': 'application/json' } };
+
+            if (method === 'POST' && bodyInput.value.trim()) {
+                try {
+                    opts.body = bodyInput.value;
+                } catch(e) {}
+            }
+
+            try {
+                const res = await fetch(url, opts);
+                statusEl.textContent = res.status;
+                statusEl.className = 'devplay-status ' + (res.ok ? 'ok' : 'err');
+                const data = await res.json();
+                bodyEl.textContent = JSON.stringify(data, null, 2);
+            } catch(e) {
+                statusEl.textContent = 'Error';
+                statusEl.className = 'devplay-status err';
+                bodyEl.textContent = 'Request failed: ' + e.message;
+            }
+        }
+
+        updateDevplayUrl();
+    </script>
 </body>
 </html>

@@ -109,6 +109,7 @@ class PublicWorkerView(APIView):
 class DataCollectionViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = DataCollection.objects.filter(status='active')
     serializer_class = DataCollectionSerializer
+    permission_classes = [permissions.AllowAny]
 
     def get_queryset(self):
         queryset = DataCollection.objects.filter(status='active')

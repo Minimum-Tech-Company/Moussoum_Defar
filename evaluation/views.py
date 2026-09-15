@@ -1,6 +1,7 @@
 from rest_framework import viewsets, status, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.permissions import AllowAny
 from django.utils import timezone
 from .models import (
     AfricanBenchmark, TestCase, Evaluation, TestExecution, APIKey
@@ -16,6 +17,7 @@ from .tasks import evaluate_model
 class AfricanBenchmarkViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = AfricanBenchmark.objects.filter(is_active=True)
     serializer_class = AfricanBenchmarkSerializer
+    permission_classes = [AllowAny]
 
     def get_queryset(self):
         queryset = AfricanBenchmark.objects.filter(is_active=True)
