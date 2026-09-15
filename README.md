@@ -4,7 +4,7 @@
 
 [![Python](https://img.shields.io/badge/Python-3.11+-blue.svg)](https://python.org)
 [![Django](https://img.shields.io/badge/Django-5.0+-green.svg)](https://djangoproject.com)
-[![License](https://img.shields.io/badge/License-Non--Commercial-blue.svg)](LICENSE)
+[![License: CC BY-NC-SA 4.0](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
 
 ---
 
@@ -336,13 +336,22 @@ total             = accuracy_score + volume_score + consistency_score
 
 ## License
 
-**Non-Commercial License** - Free for learning, research, and open-source contribution.
+**Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)**
 
-Commercial use requires written permission from Moussoum Defar.
+This license lets others remix, adapt, and build upon your work **non-commercially**, as long as they credit you and license their new creations under the identical terms.
 
-See [LICENSE](LICENSE) for full details.
+[View License](https://creativecommons.org/licenses/by-nc-sa/4/)
 
-To request commercial license: malickoseme@gmail.com
+**You are free to:**
+- Share and redistribute the material
+- Adapt and build upon the material
+
+**Under the following terms:**
+- **Attribution** - You must give appropriate credit
+- **NonCommercial** - You may not use the material for commercial purposes
+- **ShareAlike** - If you remix, you must distribute under the same license
+
+**To request commercial license:** malickoseme@gmail.com
 
 ---
 

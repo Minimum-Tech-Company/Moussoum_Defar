@@ -1,63 +1,75 @@
-Moussoum Defar License Agreement
+Moussoum Defar
 
 Copyright (c) 2024 Moussoum Defar. All rights reserved.
 
-TERMS AND CONDITIONS FOR USE, MODIFICATION, AND DISTRIBUTION
+This work is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License.
 
-1. DEFINITIONS
-   - "Software" refers to the Moussoum Defar codebase and associated files
-   - "Commercial Use" means any use intended for or resulting in commercial advantage or monetary compensation
-   - "Non-Commercial Use" means research, education, personal learning, and open-source contribution without monetary gain
+To view a copy of this license, visit:
+https://creativecommons.org/licenses/by-nc-sa/4.0/
 
-2. PERMITTED USES (FREE)
-   You are free to:
-   a) Use the Software for non-commercial purposes
-   b) Study and modify the Software
-   c) Share modifications with others under this same license
-   d) Use the Software for academic research and education
-   e) Contribute to the project on GitHub
-
-3. COMMERCIAL USE (REQUIRES PERMISSION)
-   You CANNOT use the Software for commercial purposes without explicit written permission from Moussoum Defar, including but not limited to:
-   a) Selling the Software or services based on it
-   b) Using it in a commercial product or service
-   c) Offering it as a paid SaaS solution
-   d) Using it to generate revenue
-   e) Incorporating it into proprietary software
-
-4. HOW TO OBTAIN COMMERCIAL LICENSE
-   To request commercial use permission:
-   - Email: contact@moussoumdefar.com
-   - Subject: "Commercial License Request"
-   - Include: Your name, company, intended use, and contact information
-
-5. MODIFICATIONS
-   If you modify the Software:
-   a) You must share your modifications under this same license
-   b) You must clearly indicate what changes you made
-   c) You cannot remove copyright notices
-
-6. ATTRIBUTION
-   When using the Software, you must:
-   a) Include the original copyright notice
-   b) State that modifications were made (if applicable)
-   c) Provide a link to the original project
-
-7. DISCLAIMER
-   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-8. TERMINATION
-   This license terminates automatically if you violate any terms. Upon termination, you must cease all use and destroy all copies.
-
-9. GOVERNING LAW
-   This license shall be governed by the laws of Senegal.
+or send a letter to:
+Creative Commons, PO Box 1866, Mountain View, CA 94042, USA.
 
 ---
 
-SUMMARY:
-- FREE for learning, research, and non-commercial use
-- COMMERCIAL USE requires written permission from Moussoum Defar
-- Modifications must be shared under the same license
-- Attribution required
+LICENSE TERMS
 
-Contact: malickoseme@gmail.com
+You are free to:
+
+  Share - copy and redistribute the material in any medium or format
+  Adapt - remix, transform, and build upon the material
+
+Under the following terms:
+
+  Attribution - You must give appropriate credit, provide a link to the
+  license, and indicate if changes were made. You may do so in any
+  reasonable manner, but not in any way that suggests the licensor
+  endorses you or your use.
+
+  NonCommercial - You may not use the material for commercial purposes.
+
+  ShareAlike - If you remix, transform, or build upon the material, you
+  must distribute your contributions under the same license as the original.
+
+  No additional restrictions - You may not apply legal terms or
+  technological measures that legally restrict others from doing anything
+  the license permits.
+
+---
+
+WHAT IS NOT ALLOWED (COMMERCIAL USE)
+
+  - Selling the software or services based on it
+  - Using it in a commercial product or service
+  - Offering it as a paid SaaS solution
+  - Using it to generate revenue
+  - Incorporating it into proprietary software
+
+---
+
+HOW TO OBTAIN COMMERCIAL LICENSE
+
+  To request commercial use permission, contact:
+  - Email: malickoseme@gmail.com
+  - Subject: "Commercial License Request"
+  - Include: Your name, company, intended use, and contact information
+
+---
+
+DISCLAIMER
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+  OR IMPLIED. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+  FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY.
+
+---
+
+CONTACT
+
+  For questions about this license:
+  - Email: malickoseme@gmail.com
+  - GitHub: https://github.com/moussoum-defar
+
+---
+
+Made in Africa, for Africa.
