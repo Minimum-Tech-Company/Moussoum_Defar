@@ -1,6 +1,8 @@
 from rest_framework import viewsets, status, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework.permissions import AllowAny
 from django.db.models import Avg, Count, Sum
 from django.utils import timezone
 from .models import (
@@ -90,6 +92,18 @@ class WorkerViewSet(viewsets.ModelViewSet):
                 'profile_photo': photo_url,
             })
         return Response(data)
+
+
+class PublicWorkerView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request, pk):
+        try:
+            worker = Worker.objects.select_related('user', 'country').get(pk=pk)
+        except Worker.DoesNotExist:
+            return Response({'error': 'Worker not found'}, status=404)
+        serializer = WorkerSerializer(worker)
+        return Response(serializer.data)
 
 
 class DataCollectionViewSet(viewsets.ReadOnlyModelViewSet):

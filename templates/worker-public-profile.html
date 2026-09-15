@@ -204,7 +204,7 @@
 
             try {
                 const headers = TOKEN ? { 'Authorization': 'Bearer ' + TOKEN } : {};
-                const res = await fetch('/api/v1/workers/' + workerId + '/', { headers });
+                const res = await fetch('/api/v1/workers/public/' + workerId + '/', { headers });
 
                 if (!res.ok) {
                     showError();

@@ -4,7 +4,7 @@ from .views import (
     LanguageViewSet, CountryViewSet, WorkerViewSet,
     DataCollectionViewSet, DataSubmissionViewSet,
     AnnotationTaskViewSet, RLHFTaskViewSet, SyntheticDataJobViewSet,
-    NotificationViewSet
+    NotificationViewSet, PublicWorkerView
 )
 
 router = DefaultRouter()
@@ -19,5 +19,6 @@ router.register(r'synthetic', SyntheticDataJobViewSet, basename='synthetic')
 router.register(r'notifications', NotificationViewSet, basename='notification')
 
 urlpatterns = [
+    path('public/<int:pk>/', PublicWorkerView.as_view(), name='public-worker'),
     path('', include(router.urls)),
 ]
