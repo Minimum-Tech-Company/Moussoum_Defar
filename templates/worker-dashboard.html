@@ -371,6 +371,10 @@
                             <span style="font-size:13px;color:white;font-weight:600;">${c.current_count} / ${c.target_count}</span>
                         </div>
                     </div>
+                    <div style="background:rgba(255,255,255,0.04);padding:14px;border-radius:10px;">
+                        <div style="font-size:11px;color:rgba(255,255,255,0.4);text-transform:uppercase;margin-bottom:6px;">Created by</div>
+                        <div style="font-size:15px;color:white;font-weight:600;">🏢 ${c.created_by_name || 'Unknown'}</div>
+                    </div>
                     ${c.instructions ? '<div style="background:rgba(255,255,255,0.04);padding:14px;border-radius:10px;"><div style="font-size:11px;color:rgba(255,255,255,0.4);text-transform:uppercase;margin-bottom:6px;">Instructions</div><div style="font-size:14px;color:rgba(255,255,255,0.75);line-height:1.6;">' + c.instructions + '</div></div>' : ''}
                     <div style="display:flex;gap:12px;margin-top:8px;">
                         <button onclick="closeModal()" style="flex:1;padding:12px;background:rgba(255,255,255,0.08);border:none;color:#94a3b8;border-radius:10px;cursor:pointer;font-size:14px;">Close</button>
@@ -429,7 +433,7 @@
             const data = await api('/api/v1/workers/profile/leaderboard/');
             if (!data) return;
             document.getElementById('leaderboardTable').innerHTML = data.map(w => `
-                <tr>
+                <tr onclick="window.open('/templates/worker-public-profile.html?id=${w.id}&rank=${w.rank}', '_blank')" style="cursor:pointer;" onmouseover="this.style.background='rgba(255,255,255,0.04)'" onmouseout="this.style.background='transparent'">
                     <td style="font-weight:600;color:${w.rank <= 3 ? '#fbbf24' : 'white'};">#${w.rank}</td>
                     <td style="font-weight:500;display:flex;align-items:center;gap:10px;">
                         <div style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;">

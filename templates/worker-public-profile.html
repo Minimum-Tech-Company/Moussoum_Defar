@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moussoum Defar - Worker Profile</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0a0a0f;
+            color: #e2e8f0;
+            min-height: 100vh;
+        }
+        .container { max-width: 800px; margin: 0 auto; padding: 24px; }
+        .header {
+            display: flex; align-items: center; gap: 16px;
+            margin-bottom: 32px; padding-bottom: 24px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+        .back-btn {
+            padding: 8px 16px; background: rgba(255,255,255,0.06);
+            border: none; color: #94a3b8; border-radius: 8px;
+            cursor: pointer; font-size: 14px; text-decoration: none;
+        }
+        .back-btn:hover { background: rgba(255,255,255,0.1); color: white; }
+        .page-title { font-size: 24px; font-weight: 700; color: white; }
+        .profile-header {
+            display: flex; align-items: center; gap: 24px;
+            margin-bottom: 32px; padding: 32px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 16px;
+        }
+        .profile-photo {
+            width: 120px; height: 120px; border-radius: 50%;
+            background: rgba(255,255,255,0.06); display: flex;
+            align-items: center; justify-content: center;
+            font-size: 48px; color: rgba(255,255,255,0.3);
+            overflow: hidden; border: 3px solid rgba(16,185,129,0.3);
+            flex-shrink: 0;
+        }
+        .profile-photo img { width: 100%; height: 100%; object-fit: cover; }
+        .profile-info { flex: 1; }
+        .profile-name { font-size: 24px; font-weight: 700; color: white; margin-bottom: 4px; }
+        .profile-username { font-size: 14px; color: rgba(255,255,255,0.5); margin-bottom: 12px; }
+        .profile-bio { font-size: 14px; color: rgba(255,255,255,0.7); line-height: 1.6; }
+        .stats-grid {
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;
+            margin-bottom: 24px;
+        }
+        .stat-item {
+            text-align: center; padding: 20px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 12px;
+        }
+        .stat-value {
+            font-size: 28px; font-weight: 700; color: #10b981;
+            margin-bottom: 4px;
+        }
+        .stat-label {
+            font-size: 12px; color: rgba(255,255,255,0.4);
+            text-transform: uppercase;
+        }
+        .card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 16px; padding: 24px; margin-bottom: 24px;
+        }
+        .card-title {
+            font-size: 18px; font-weight: 600; color: white;
+            margin-bottom: 16px;
+        }
+        .info-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+        }
+        .info-item {
+            padding: 16px; background: rgba(255,255,255,0.03);
+            border-radius: 10px;
+        }
+        .info-label {
+            font-size: 11px; color: rgba(255,255,255,0.4);
+            text-transform: uppercase; margin-bottom: 6px;
+        }
+        .info-value { font-size: 15px; color: white; font-weight: 600; }
+        .level-bar {
+            display: flex; gap: 8px; margin-top: 12px;
+        }
+        .level-dot {
+            width: 40px; height: 8px; border-radius: 4px;
+            background: rgba(255,255,255,0.08);
+        }
+        .level-dot.filled { background: #10b981; }
+        .badge {
+            display: inline-block; padding: 4px 12px;
+            border-radius: 20px; font-size: 12px; font-weight: 600;
+        }
+        .badge-level {
+            background: rgba(16,185,129,0.15); color: #10b981;
+        }
+        .loading { text-align: center; padding: 40px; color: rgba(255,255,255,0.5); }
+        .error { text-align: center; padding: 40px; color: #ef4444; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="/templates/worker-dashboard.html" class="back-btn">← Back to Leaderboard</a>
+            <h1 class="page-title">Worker Profile</h1>
+        </div>
+
+        <div id="loadingState" class="loading">
+            <p>Loading profile...</p>
+        </div>
+
+        <div id="profileContent" style="display: none;">
+            <div class="profile-header">
+                <div class="profile-photo" id="profilePhoto">
+                    <span id="photoIcon">👤</span>
+                </div>
+                <div class="profile-info">
+                    <div class="profile-name" id="profileName">Loading...</div>
+                    <div class="profile-username" id="profileUsername">@username</div>
+                    <div class="profile-bio" id="profileBio">No bio available</div>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-value" id="statRank">#-</div>
+                    <div class="stat-label">Rank</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="statScore">0</div>
+                    <div class="stat-label">Quality Score</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="statTasks">0</div>
+                    <div class="stat-label">Tasks Done</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="statAccuracy">0%</div>
+                    <div class="stat-label">Accuracy</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 class="card-title">Level Progress</h2>
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                    <span id="levelName" style="font-weight:600;">Level 1 - Data Worker</span>
+                    <span class="badge badge-level" id="levelBadge">Level 1</span>
+                </div>
+                <div class="level-bar" id="levelBar">
+                    <div class="level-dot filled"></div>
+                    <div class="level-dot"></div>
+                    <div class="level-dot"></div>
+                    <div class="level-dot"></div>
+                    <div class="level-dot"></div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 class="card-title">Details</h2>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-label">Country</div>
+                        <div class="info-value" id="infoCountry">-</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Languages</div>
+                        <div class="info-value" id="infoLanguages">-</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Joined</div>
+                        <div class="info-value" id="infoJoined">-</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Phone</div>
+                        <div class="info-value" id="infoPhone">-</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="errorState" class="error" style="display: none;">
+            <p>Worker not found</p>
+        </div>
+    </div>
+
+    <script>
+        const LEVEL_NAMES = ['', 'Data Worker', 'Verified Annotator', 'Language Specialist', 'AI Evaluator', 'Domain Expert'];
+        const TOKEN = localStorage.getItem('workerToken') || localStorage.getItem('clientToken');
+
+        async function loadWorkerProfile() {
+            const params = new URLSearchParams(window.location.search);
+            const workerId = params.get('id');
+            const rank = params.get('rank');
+
+            if (!workerId) {
+                showError();
+                return;
+            }
+
+            try {
+                const headers = TOKEN ? { 'Authorization': 'Bearer ' + TOKEN } : {};
+                const res = await fetch('/api/v1/workers/' + workerId + '/', { headers });
+
+                if (!res.ok) {
+                    showError();
+                    return;
+                }
+
+                const data = await res.json();
+                displayProfile(data, rank);
+            } catch (e) {
+                showError();
+            }
+        }
+
+        function displayProfile(data, rank) {
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('profileContent').style.display = 'block';
+
+            // Profile photo
+            if (data.profile_photo) {
+                document.getElementById('profilePhoto').innerHTML = `<img src="${data.profile_photo}" alt="Profile">`;
+            }
+
+            // Basic info
+            document.getElementById('profileName').textContent = data.user?.first_name && data.user?.last_name
+                ? data.user.first_name + ' ' + data.user.last_name
+                : data.user?.username || 'Unknown';
+            document.getElementById('profileUsername').textContent = '@' + (data.user?.username || 'unknown');
+            document.getElementById('profileBio').textContent = data.bio || 'No bio available';
+
+            // Stats
+            document.getElementById('statRank').textContent = rank ? '#' + rank : '#-';
+            document.getElementById('statScore').textContent = (data.quality_score || 0).toFixed(1);
+            document.getElementById('statTasks').textContent = data.total_tasks || 0;
+            document.getElementById('statAccuracy').textContent = Math.round((data.accuracy || 0) * 100) + '%';
+
+            // Level
+            const level = data.level || 1;
+            document.getElementById('levelName').textContent = 'Level ' + level + ' - ' + (LEVEL_NAMES[level] || '');
+            document.getElementById('levelBadge').textContent = 'Level ' + level;
+            document.querySelectorAll('.level-dot').forEach((d, i) => { d.classList.toggle('filled', i < level); });
+
+            // Details
+            document.getElementById('infoCountry').textContent = data.country?.name || '-';
+            document.getElementById('infoLanguages').textContent = (data.languages || []).map(l => l.name).join(', ') || '-';
+            document.getElementById('infoJoined').textContent = data.created_at ? new Date(data.created_at).toLocaleDateString() : '-';
+            document.getElementById('infoPhone').textContent = data.phone || '-';
+        }
+
+        function showError() {
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('errorState').style.display = 'block';
+        }
+
+        loadWorkerProfile();
+    </script>
+</body>
+</html>

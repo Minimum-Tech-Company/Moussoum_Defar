@@ -414,6 +414,10 @@
                         </div>
                     </div>
                     ${c.instructions ? '<div style="background:rgba(255,255,255,0.04);padding:14px;border-radius:10px;"><div style="font-size:11px;color:rgba(255,255,255,0.4);text-transform:uppercase;margin-bottom:6px;">Instructions</div><div style="font-size:14px;color:rgba(255,255,255,0.75);line-height:1.6;">' + c.instructions + '</div></div>' : ''}
+                    <div style="background:rgba(255,255,255,0.04);padding:14px;border-radius:10px;">
+                        <div style="font-size:11px;color:rgba(255,255,255,0.4);text-transform:uppercase;margin-bottom:6px;">Created by</div>
+                        <div style="font-size:15px;color:white;font-weight:600;">🏢 ${c.created_by_name || 'Unknown'}</div>
+                    </div>
                     <a href="/api/v1/clients/submissions/download-all/?collection_id=${c.id}" style="display:block;width:100%;padding:12px;background:#3b82f6;color:white;border-radius:10px;text-decoration:none;font-size:14px;font-weight:600;text-align:center;">⬇ Download All Files (ZIP)</a>
                     <button onclick="closeModal()" style="width:100%;padding:12px;background:rgba(255,255,255,0.08);border:none;color:#94a3b8;border-radius:10px;cursor:pointer;font-size:14px;">Close</button>
                 </div>`;

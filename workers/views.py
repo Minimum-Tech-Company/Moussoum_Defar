@@ -80,6 +80,7 @@ class WorkerViewSet(viewsets.ModelViewSet):
         for i, w in enumerate(workers):
             photo_url = w.profile_photo.url if w.profile_photo else None
             data.append({
+                'id': w.id,
                 'rank': i + 1,
                 'username': w.user.username,
                 'country': w.country.name if w.country else '',
