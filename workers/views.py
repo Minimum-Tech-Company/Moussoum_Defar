@@ -7,7 +7,7 @@ from .models import (
     Language, Country, Worker, WorkerLevel,
     DataCollection, DataSubmission, QualityLog,
     AnnotationTask, AnnotationResult, RLHFTask, RLHFFeedback,
-    SyntheticDataJob, Payment, Notification
+    SyntheticDataJob, Notification
 )
 from .serializers import (
     LanguageSerializer, CountrySerializer, WorkerSerializer,
@@ -15,7 +15,7 @@ from .serializers import (
     DataCollectionSerializer, DataSubmissionSerializer,
     QualityLogSerializer, AnnotationTaskSerializer, AnnotationResultSerializer,
     RLHFTaskSerializer, RLHFFeedbackSerializer, SyntheticDataJobSerializer,
-    PaymentSerializer, NotificationSerializer
+    NotificationSerializer
 )
 
 
@@ -72,20 +72,6 @@ class WorkerViewSet(viewsets.ModelViewSet):
         submissions = DataSubmission.objects.filter(worker=worker)
         serializer = DataSubmissionSerializer(submissions, many=True)
         return Response(serializer.data)
-
-    @action(detail=False, methods=['get'])
-    def earnings(self, request):
-        worker, created = Worker.objects.get_or_create(user=request.user)
-        payments = Payment.objects.filter(worker=worker)
-        total_earned = payments.filter(status='completed').aggregate(total=Sum('amount'))['total'] or 0
-        return Response({
-            'balance': str(worker.balance),
-            'total_tasks': worker.total_tasks,
-            'quality_score': worker.quality_score,
-            'level': worker.level,
-            'total_earned': str(total_earned),
-            'pending_payments': payments.filter(status='pending').count(),
-        })
 
     @action(detail=False, methods=['get'])
     def leaderboard(self, request):
@@ -230,15 +216,14 @@ class AnnotationTaskViewSet(viewsets.ModelViewSet):
         result = serializer.save(task=task, worker=worker)
 
         worker.total_tasks += 1
-        worker.balance += task.reward
-        worker.save(update_fields=['total_tasks', 'balance'])
+        worker.save(update_fields=['total_tasks'])
 
         Notification.objects.create(
             user=request.user,
             notification_type='task_completed',
             title='Annotation Complete',
-            message=f'You earned {task.reward} for annotating: {task.title}',
-            data={'task_id': task.id, 'reward': str(task.reward)}
+            message=f'You completed annotation: {task.title}',
+            data={'task_id': task.id}
         )
 
         return Response(AnnotationResultSerializer(result).data, status=status.HTTP_201_CREATED)
@@ -315,15 +300,14 @@ class RLHFTaskViewSet(viewsets.ModelViewSet):
         feedback = serializer.save(task=task, worker=worker)
 
         worker.total_tasks += 1
-        worker.balance += task.reward
-        worker.save(update_fields=['total_tasks', 'balance'])
+        worker.save(update_fields=['total_tasks'])
 
         Notification.objects.create(
             user=request.user,
             notification_type='task_completed',
             title='RLHF Feedback Complete',
-            message=f'You earned {task.reward} for rating: {task.title}',
-            data={'task_id': task.id, 'reward': str(task.reward)}
+            message=f'You completed feedback for: {task.title}',
+            data={'task_id': task.id}
         )
 
         return Response(RLHFFeedbackSerializer(feedback).data, status=status.HTTP_201_CREATED)
@@ -372,53 +356,6 @@ class SyntheticDataJobViewSet(viewsets.ModelViewSet):
             'count': job.current_count,
             'data': job.output_data
         })
-
-
-# === PAYMENTS ===
-
-class PaymentViewSet(viewsets.ReadOnlyModelViewSet):
-    serializer_class = PaymentSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-    def get_queryset(self):
-        worker, _ = Worker.objects.get_or_create(user=self.request.user)
-        return Payment.objects.filter(worker=worker)
-
-    @action(detail=False, methods=['post'])
-    def request_payout(self, request):
-        worker, _ = Worker.objects.get_or_create(user=request.user)
-        amount = request.data.get('amount')
-        method = request.data.get('method', 'mobile_money')
-        phone = request.data.get('phone_number', '')
-
-        if not amount or float(amount) <= 0:
-            return Response({'error': 'Invalid amount'}, status=status.HTTP_400_BAD_REQUEST)
-
-        if float(amount) > float(worker.balance):
-            return Response({'error': 'Insufficient balance'}, status=status.HTTP_400_BAD_REQUEST)
-
-        payment = Payment.objects.create(
-            worker=worker,
-            amount=amount,
-            currency='USD',
-            method=method,
-            phone_number=phone,
-            status='processing',
-            notes=f'Payout request via {method}'
-        )
-
-        worker.balance -= amount
-        worker.save(update_fields=['balance'])
-
-        Notification.objects.create(
-            user=worker.user,
-            notification_type='payment_processing',
-            title='Payment Processing',
-            message=f'Your payout of ${amount} via {method} is being processed.',
-            data={'payment_id': payment.id, 'amount': str(amount)}
-        )
-
-        return Response(PaymentSerializer(payment).data, status=status.HTTP_201_CREATED)
 
 
 # === NOTIFICATIONS ===

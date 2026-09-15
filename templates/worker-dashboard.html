@@ -143,7 +143,6 @@
                 <a class="sidebar-link" onclick="showSection('collections')"><span class="icon">📦</span> Data Collections</a>
                 <a class="sidebar-link" onclick="showSection('annotations')"><span class="icon">🏷️</span> Annotations</a>
                 <a class="sidebar-link" onclick="showSection('rlhf')"><span class="icon">🤖</span> RLHF Tasks</a>
-                <a class="sidebar-link" onclick="showSection('payments')"><span class="icon">💰</span> Earnings</a>
                 <a class="sidebar-link" onclick="showSection('leaderboard')"><span class="icon">🏆</span> Leaderboard</a>
             </nav>
             <div class="sidebar-footer">
@@ -162,7 +161,7 @@
             <!-- OVERVIEW -->
             <div class="section active" id="sec-overview">
                 <div class="page-header">
-                    <div><h1 class="page-title">Welcome back!</h1><p class="page-subtitle">Here's your earnings overview</p></div>
+                    <div><h1 class="page-title">Welcome back!</h1><p class="page-subtitle">Here's your overview</p></div>
                     <div class="notif-wrapper" id="notifWrapper">
                         <div class="notif-bell" onclick="toggleNotifPanel()">🔔<div class="notif-badge" id="notifBadge">0</div></div>
                         <div class="notif-panel" id="notifPanel">
@@ -172,10 +171,9 @@
                     </div>
                 </div>
                 <div class="stats-row">
-                    <div class="stat-card"><div class="stat-card-label">Balance</div><div class="stat-card-value green" id="sBalance">$0.00</div></div>
-                    <div class="stat-card"><div class="stat-card-label">Total Earned</div><div class="stat-card-value" id="sEarned">$0.00</div></div>
                     <div class="stat-card"><div class="stat-card-label">Tasks Done</div><div class="stat-card-value blue" id="sTasks">0</div></div>
                     <div class="stat-card"><div class="stat-card-label">Quality Score</div><div class="stat-card-value yellow" id="sQuality">0</div></div>
+                    <div class="stat-card"><div class="stat-card-label">Level</div><div class="stat-card-value green" id="sLevel">1</div></div>
                 </div>
 
                 <div class="card">
@@ -229,27 +227,6 @@
             </div>
 
             <!-- PAYMENTS -->
-            <div class="section" id="sec-payments">
-                <div class="page-header">
-                    <div><h1 class="page-title">Earnings & Payments</h1><p class="page-subtitle">Track your earnings and request payouts</p></div>
-                    <button class="btn btn-primary" onclick="requestPayout()">Request Payout</button>
-                </div>
-                <div class="stats-row" style="grid-template-columns: repeat(3, 1fr);">
-                    <div class="stat-card"><div class="stat-card-label">Available Balance</div><div class="stat-card-value green" id="pBalance">$0.00</div></div>
-                    <div class="stat-card"><div class="stat-card-label">Total Earned</div><div class="stat-card-value" id="pEarned">$0.00</div></div>
-                    <div class="stat-card"><div class="stat-card-label">Pending Payouts</div><div class="stat-card-value yellow" id="pPending">0</div></div>
-                </div>
-                <div class="card">
-                    <div class="card-header"><h2 class="card-title">Payment History</h2></div>
-                    <div class="card-body">
-                        <table>
-                            <thead><tr><th>Date</th><th>Amount</th><th>Method</th><th>Status</th></tr></thead>
-                            <tbody id="paymentsTable"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
             <!-- LEADERBOARD -->
             <div class="section" id="sec-leaderboard">
                 <div class="page-header"><h1 class="page-title">Leaderboard</h1><p class="page-subtitle">Top workers across Africa</p></div>
@@ -310,12 +287,11 @@
         }
 
         async function loadOverview() {
-            const data = await api('/api/v1/workers/profile/earnings/');
+            const data = await api('/api/v1/workers/profile/me/');
             if (!data) return;
-            document.getElementById('sBalance').textContent = '$' + parseFloat(data.balance || 0).toFixed(2);
-            document.getElementById('sEarned').textContent = '$' + parseFloat(data.total_earned || 0).toFixed(2);
             document.getElementById('sTasks').textContent = data.total_tasks || 0;
             document.getElementById('sQuality').textContent = (data.quality_score || 0).toFixed(1);
+            document.getElementById('sLevel').textContent = data.level || 1;
             const level = data.level || 1;
             document.getElementById('userLevel').textContent = 'Level ' + level + ' - ' + (LEVEL_NAMES[level] || '');
             document.getElementById('levelName').textContent = 'Level ' + level + ' - ' + (LEVEL_NAMES[level] || '');
@@ -340,7 +316,6 @@
                         <div class="task-meta-item">Language: <span>${c.language_name || '-'}</span></div>
                         <div class="task-meta-item">Country: <span>${c.country_name || '-'}</span></div>
                     </div>
-                    <div class="task-reward">$${c.price_per_item}/item</div>
                     <div class="task-spacer"></div>
                     <button class="task-btn" onclick="event.stopPropagation();startCollection(${c.id}, '${c.data_type}')">Start Contributing</button>
                 </div>
@@ -385,10 +360,6 @@
                             </div>
                             <span style="font-size:13px;color:white;font-weight:600;">${c.current_count} / ${c.target_count}</span>
                         </div>
-                    </div>
-                    <div style="background:rgba(255,255,255,0.04);padding:14px;border-radius:10px;">
-                        <div style="font-size:11px;color:rgba(255,255,255,0.4);text-transform:uppercase;margin-bottom:6px;">Price per item</div>
-                        <div style="font-size:15px;color:#10b981;font-weight:600;">$${c.price_per_item}</div>
                     </div>
                     ${c.instructions ? '<div style="background:rgba(255,255,255,0.04);padding:14px;border-radius:10px;"><div style="font-size:11px;color:rgba(255,255,255,0.4);text-transform:uppercase;margin-bottom:6px;">Instructions</div><div style="font-size:14px;color:rgba(255,255,255,0.75);line-height:1.6;">' + c.instructions + '</div></div>' : ''}
                     <div style="display:flex;gap:12px;margin-top:8px;">
@@ -440,29 +411,6 @@
                     <div class="task-reward">$${t.reward}</div>
                     <button class="task-btn" onclick="startRLHF(${t.id})">Rate Responses</button>
                 </div>
-            `).join('');
-        }
-
-        async function loadPayments() {
-            const earnings = await api('/api/v1/workers/profile/earnings/');
-            if (earnings) {
-                document.getElementById('pBalance').textContent = '$' + parseFloat(earnings.balance || 0).toFixed(2);
-                document.getElementById('pEarned').textContent = '$' + parseFloat(earnings.total_earned || 0).toFixed(2);
-                document.getElementById('pPending').textContent = earnings.pending_payments || 0;
-            }
-            const res2 = await api('/api/v1/workers/payments/');
-            const data = (res2 && res2.results) ? res2.results : (res2 || []);
-            if (!data || data.length === 0) {
-                document.getElementById('paymentsTable').innerHTML = '<tr><td colspan="4" style="text-align:center;color:rgba(255,255,255,0.4);">No payments yet</td></tr>';
-                return;
-            }
-            document.getElementById('paymentsTable').innerHTML = data.map(p => `
-                <tr>
-                    <td>${new Date(p.created_at).toLocaleDateString()}</td>
-                    <td style="font-weight:600;">$${parseFloat(p.amount).toFixed(2)}</td>
-                    <td>${p.method}</td>
-                    <td><span class="badge badge-${p.status}">${p.status}</span></td>
-                </tr>
             `).join('');
         }
 
@@ -670,20 +618,8 @@
             `).join('');
         }
 
-        async function requestPayout() {
-            const amount = prompt('Enter amount to withdraw ($):');
-            if (!amount) return;
-            const phone = prompt('Enter your mobile money phone number:');
-            const res = await fetch('/api/v1/workers/payments/request_payout/', {
-                method: 'POST', headers,
-                body: JSON.stringify({ amount: parseFloat(amount), method: 'mobile_money', phone_number: phone || '' })
-            });
-            if (res.ok) { alert('Payout requested!'); loadPayments(); loadOverview(); }
-            else { const d = await res.json(); alert('Error: ' + (d.error || 'Failed')); }
-        }
-
         // === NOTIFICATIONS ===
-        const NOTIF_ICONS = { task_assigned: '📋', task_completed: '✅', payment_received: '💰', payment_processing: '⏳', level_up: '🎉', evaluation_complete: '🧪', collection_ready: '📦', system: 'ℹ️' };
+        const NOTIF_ICONS = { task_assigned: '📋', task_completed: '✅', level_up: '🎉', evaluation_complete: '🧪', collection_ready: '📦', system: 'ℹ️' };
 
         async function loadNotifications() {
             const res = await api('/api/v1/workers/notifications/');
@@ -756,7 +692,6 @@
         loadCollections();
         loadAnnotations();
         loadRLHF();
-        loadPayments();
         loadLeaderboard();
         loadNotifications();
         setInterval(loadNotifications, 30000);

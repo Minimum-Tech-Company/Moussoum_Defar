@@ -54,7 +54,6 @@ class Worker(models.Model):
     quality_score = models.FloatField(default=0.0)
     total_tasks = models.IntegerField(default=0)
     accuracy = models.FloatField(default=0.0)
-    balance = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     is_verified = models.BooleanField(default=False)
     bio = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -147,7 +146,6 @@ class DataCollection(models.Model):
     country = models.ForeignKey(Country, on_delete=models.CASCADE)
     target_count = models.IntegerField(default=1000)
     current_count = models.IntegerField(default=0)
-    price_per_item = models.DecimalField(max_digits=8, decimal_places=4)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='active')
     instructions = models.TextField(blank=True)
     sample_data = models.JSONField(default=dict)
@@ -413,41 +411,6 @@ class SyntheticDataJob(models.Model):
 
     def __str__(self):
         return f"{self.title} ({self.get_generation_type_display()})"
-
-
-class Payment(models.Model):
-    """Worker payment/earning record."""
-    STATUS_CHOICES = [
-        ('pending', 'Pending'),
-        ('processing', 'Processing'),
-        ('completed', 'Completed'),
-        ('failed', 'Failed'),
-    ]
-
-    METHOD_CHOICES = [
-        ('mobile_money', 'Mobile Money'),
-        ('bank_transfer', 'Bank Transfer'),
-        ('crypto', 'Cryptocurrency'),
-    ]
-
-    worker = models.ForeignKey(Worker, on_delete=models.CASCADE, related_name='payments')
-    amount = models.DecimalField(max_digits=10, decimal_places=2)
-    currency = models.CharField(max_length=10, default='USD')
-    method = models.CharField(max_length=20, choices=METHOD_CHOICES, default='mobile_money')
-    phone_number = models.CharField(max_length=20, blank=True, help_text='For mobile money')
-    reference = models.CharField(max_length=200, blank=True)
-    status = models.CharField(max_length=15, choices=STATUS_CHOICES, default='pending')
-    task_type = models.CharField(max_length=50, blank=True, help_text='Type of task earned from')
-    task_id = models.IntegerField(null=True, blank=True, help_text='ID of completed task')
-    notes = models.TextField(blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    processed_at = models.DateTimeField(null=True, blank=True)
-
-    class Meta:
-        ordering = ['-created_at']
-
-    def __str__(self):
-        return f"{self.worker} - {self.amount} {self.currency} ({self.status})"
 
 
 class Notification(models.Model):

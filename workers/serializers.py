@@ -5,7 +5,7 @@ from .models import (
     Language, Country, Worker, WorkerLevel,
     DataCollection, DataSubmission, QualityLog,
     AnnotationTask, AnnotationResult, RLHFTask, RLHFFeedback,
-    SyntheticDataJob, Payment, Notification
+    SyntheticDataJob, Notification
 )
 
 
@@ -40,7 +40,7 @@ class WorkerSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'user', 'phone', 'country', 'languages',
             'level', 'level_display', 'quality_score', 'total_tasks',
-            'accuracy', 'balance', 'is_verified', 'bio',
+            'accuracy', 'is_verified', 'bio',
             'created_at', 'updated_at'
         ]
 
@@ -139,7 +139,7 @@ class DataCollectionSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'title', 'description', 'data_type', 'language', 'country',
             'language_name', 'country_name',
-            'target_count', 'current_count', 'price_per_item', 'status',
+            'target_count', 'current_count', 'status',
             'instructions', 'progress_percentage', 'is_complete',
             'created_at', 'updated_at'
         ]
@@ -237,19 +237,6 @@ class SyntheticDataJobSerializer(serializers.ModelSerializer):
             'created_at', 'completed_at'
         ]
         read_only_fields = ['created_by', 'current_count', 'output_data', 'status', 'created_at', 'completed_at']
-
-
-class PaymentSerializer(serializers.ModelSerializer):
-    worker_name = serializers.CharField(source='worker.user.username', read_only=True)
-
-    class Meta:
-        model = Payment
-        fields = [
-            'id', 'worker', 'worker_name', 'amount', 'currency', 'method',
-            'phone_number', 'reference', 'status', 'task_type', 'task_id',
-            'notes', 'created_at', 'processed_at'
-        ]
-        read_only_fields = ['worker', 'created_at', 'processed_at']
 
 
 class NotificationSerializer(serializers.ModelSerializer):

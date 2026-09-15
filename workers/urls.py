@@ -4,7 +4,7 @@ from .views import (
     LanguageViewSet, CountryViewSet, WorkerViewSet,
     DataCollectionViewSet, DataSubmissionViewSet,
     AnnotationTaskViewSet, RLHFTaskViewSet, SyntheticDataJobViewSet,
-    PaymentViewSet, NotificationViewSet
+    NotificationViewSet
 )
 
 router = DefaultRouter()
@@ -16,7 +16,6 @@ router.register(r'submissions', DataSubmissionViewSet, basename='submission')
 router.register(r'annotations', AnnotationTaskViewSet, basename='annotation')
 router.register(r'rlhf', RLHFTaskViewSet, basename='rlhf')
 router.register(r'synthetic', SyntheticDataJobViewSet, basename='synthetic')
-router.register(r'payments', PaymentViewSet, basename='payment')
 router.register(r'notifications', NotificationViewSet, basename='notification')
 
 urlpatterns = [

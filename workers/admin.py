@@ -24,7 +24,7 @@ class CountryAdmin(admin.ModelAdmin):
 class WorkerAdmin(admin.ModelAdmin):
     list_display = [
         'user', 'country', 'level', 'quality_score',
-        'total_tasks', 'accuracy', 'balance', 'is_verified'
+        'total_tasks', 'accuracy', 'is_verified'
     ]
     list_filter = ['level', 'is_verified', 'country']
     search_fields = ['user__username', 'user__email', 'phone']
@@ -41,7 +41,7 @@ class WorkerLevelAdmin(admin.ModelAdmin):
 class DataCollectionAdmin(admin.ModelAdmin):
     list_display = [
         'title', 'data_type', 'language', 'country',
-        'target_count', 'current_count', 'status', 'price_per_item'
+        'target_count', 'current_count', 'status'
     ]
     list_filter = ['data_type', 'status', 'language', 'country']
     search_fields = ['title', 'description']

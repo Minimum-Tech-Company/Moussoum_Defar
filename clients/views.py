@@ -222,19 +222,16 @@ class ClientViewSet(viewsets.ModelViewSet):
 
         return Response(SubscriptionSerializer(subscription).data)
 
-    @action(detail=False, methods=['post'])
-    def deposit(self, request):
-        client, _ = Client.objects.get_or_create(user=request.user)
-        from decimal import Decimal
-        try:
-            amount = Decimal(str(request.data.get('amount', 0)))
-        except Exception:
-            return Response({'error': 'Invalid amount'}, status=status.HTTP_400_BAD_REQUEST)
-        if amount < 10:
-            return Response({'error': 'Minimum deposit is $10'}, status=status.HTTP_400_BAD_REQUEST)
-        client.balance += amount
-        client.save(update_fields=['balance'])
-        return Response({'balance': str(client.balance), 'deposited': str(amount)}, status=status.HTTP_200_OK)
+    @action(detail=False, methods=['get'])
+    def subscription(self, request):
+        client, created = Client.objects.get_or_create(user=request.user)
+        subscription = Subscription.objects.filter(
+            client=client, status='active'
+        ).first()
+
+        if subscription:
+            return Response(SubscriptionSerializer(subscription).data)
+        return Response({'error': 'No active subscription'}, status=404)
 
 
 class DataCollectionViewSet(viewsets.ModelViewSet):
@@ -323,29 +320,12 @@ class DataSubmissionViewSet(viewsets.ModelViewSet):
         )
         worker.calculate_quality_score()
 
-        amount = Decimal(str(collection.price_per_item))
-        worker.balance += amount
-        worker.save(update_fields=['balance'])
-
-        from workers.models import Payment, Notification
-        Payment.objects.create(
-            worker=worker,
-            amount=amount,
-            currency='USD',
-            method='mobile_money',
-            reference=f'collection-{collection.id}-sub-{submission.id}',
-            status='completed',
-            task_type='data_collection',
-            task_id=submission.id,
-            notes=f'Payment for approved submission to "{collection.title}"'
-        )
-
         Notification.objects.create(
             user=worker.user,
-            notification_type='payment_received',
-            title='Payment Received',
-            message=f'You earned ${amount} for your contribution to "{collection.title}"!',
-            data={'submission_id': submission.id, 'collection_id': collection.id, 'amount': str(amount)}
+            notification_type='task_completed',
+            title='Submission Approved',
+            message=f'Your submission to "{collection.title}" was approved!',
+            data={'submission_id': submission.id, 'collection_id': collection.id}
         )
         return Response(DataSubmissionSerializer(submission).data)
 
