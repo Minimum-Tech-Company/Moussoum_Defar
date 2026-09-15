@@ -371,21 +371,26 @@ class DataSubmissionViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['get'], url_path='download-all')
     def download_all(self, request):
-        data_type = request.query_params.get('data_type')
         collection_id = request.query_params.get('collection_id')
         status_filter = request.query_params.get('status')
 
-        qs = DataSubmission.objects.select_related('collection').filter(file__isnull=False).exclude(file='')
+        if not collection_id:
+            return Response({'error': 'collection_id is required'}, status=400)
 
-        if data_type:
-            qs = qs.filter(collection__data_type=data_type)
-        if collection_id:
-            qs = qs.filter(collection_id=collection_id)
+        try:
+            collection = DataCollection.objects.get(id=collection_id)
+        except DataCollection.DoesNotExist:
+            return Response({'error': 'Collection not found'}, status=404)
+
+        qs = DataSubmission.objects.filter(
+            collection=collection, file__isnull=False
+        ).exclude(file='')
+
         if status_filter:
             qs = qs.filter(status=status_filter)
 
         if not qs.exists():
-            return Response({'error': 'No files found'}, status=404)
+            return Response({'error': 'No files found in this collection'}, status=404)
 
         zip_buffer = io.BytesIO()
         with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zf:
@@ -400,6 +405,6 @@ class DataSubmissionViewSet(viewsets.ModelViewSet):
 
         zip_buffer.seek(0)
         response = StreamingHttpResponse(zip_buffer, content_type='application/zip')
-        filename = f'moussoum_data_{data_type or "all"}.zip'
-        response['Content-Disposition'] = f'attachment; filename="{filename}"'
+        safe_title = collection.title.replace(' ', '_')[:50]
+        response['Content-Disposition'] = f'attachment; filename="{safe_title}.zip"'
         return response

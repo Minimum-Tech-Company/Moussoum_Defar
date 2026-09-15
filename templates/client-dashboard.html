@@ -239,13 +239,6 @@
                     <div class="stat-card"><div class="stat-card-label">Approved</div><div class="stat-card-value green" id="sApprovedSubs">0</div></div>
                     <div class="stat-card"><div class="stat-card-label">Rejected</div><div class="stat-card-value red" id="sRejectedSubs">0</div></div>
                 </div>
-                <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
-                    <a href="/api/v1/clients/submissions/download-all/" style="padding:8px 16px;background:#3b82f6;color:white;border-radius:8px;text-decoration:none;font-size:13px;font-weight:500;">⬇ Download All Files (ZIP)</a>
-                    <a href="/api/v1/clients/submissions/download-all/?data_type=audio" style="padding:8px 16px;background:#8b5cf6;color:white;border-radius:8px;text-decoration:none;font-size:13px;font-weight:500;">🎵 Audio Only</a>
-                    <a href="/api/v1/clients/submissions/download-all/?data_type=image" style="padding:8px 16px;background:#f59e0b;color:white;border-radius:8px;text-decoration:none;font-size:13px;font-weight:500;">🖼 Images Only</a>
-                    <a href="/api/v1/clients/submissions/download-all/?data_type=video" style="padding:8px 16px;background:#ef4444;color:white;border-radius:8px;text-decoration:none;font-size:13px;font-weight:500;">🎬 Videos Only</a>
-                    <a href="/api/v1/clients/submissions/download-all/?status=approved" style="padding:8px 16px;background:#10b981;color:white;border-radius:8px;text-decoration:none;font-size:13px;font-weight:500;">✅ Approved Only</a>
-                </div>
                 <div class="card"><div class="card-body">
                     <table><thead><tr><th>Worker</th><th>Collection</th><th>Type</th><th>Content</th><th>Status</th><th>Submitted</th><th>Actions</th></tr></thead>
                     <tbody id="submissionsTable"></tbody></table>
@@ -394,6 +387,7 @@
                     <div class="task-reward">$${c.price_per_item}/item</div>
                     <div class="task-spacer"></div>
                     <div style="display:flex;gap:8px;">
+                        <a href="/api/v1/clients/submissions/download-all/?collection_id=${c.id}" onclick="event.stopPropagation()" style="flex:1;text-align:center;padding:8px;background:#3b82f6;color:white;border-radius:8px;text-decoration:none;font-size:12px;font-weight:500;">⬇ Download</a>
                         <button class="task-btn" style="flex:1;background:#ef4444;" onclick="event.stopPropagation();deleteItem('/api/v1/clients/data-collections/${c.id}/')">Delete</button>
                     </div>
                 </div>`;
@@ -443,6 +437,7 @@
                         <div style="font-size:15px;color:#10b981;font-weight:600;">$${c.price_per_item}</div>
                     </div>
                     ${c.instructions ? '<div style="background:rgba(255,255,255,0.04);padding:14px;border-radius:10px;"><div style="font-size:11px;color:rgba(255,255,255,0.4);text-transform:uppercase;margin-bottom:6px;">Instructions</div><div style="font-size:14px;color:rgba(255,255,255,0.75);line-height:1.6;">' + c.instructions + '</div></div>' : ''}
+                    <a href="/api/v1/clients/submissions/download-all/?collection_id=${c.id}" style="display:block;width:100%;padding:12px;background:#3b82f6;color:white;border-radius:10px;text-decoration:none;font-size:14px;font-weight:600;text-align:center;">⬇ Download All Files (ZIP)</a>
                     <button onclick="closeModal()" style="width:100%;padding:12px;background:rgba(255,255,255,0.08);border:none;color:#94a3b8;border-radius:10px;cursor:pointer;font-size:14px;">Close</button>
                 </div>`;
             modal.classList.add('open');
