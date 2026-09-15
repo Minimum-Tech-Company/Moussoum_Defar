@@ -40,7 +40,7 @@ class WorkerSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'user', 'phone', 'country', 'languages',
             'level', 'level_display', 'quality_score', 'total_tasks',
-            'accuracy', 'is_verified', 'bio',
+            'accuracy', 'is_verified', 'bio', 'profile_photo',
             'created_at', 'updated_at'
         ]
 
@@ -113,13 +113,13 @@ class WorkerLoginSerializer(serializers.Serializer):
 class WorkerUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Worker
-        fields = ['phone', 'country', 'languages', 'bio']
+        fields = ['phone', 'country', 'languages', 'bio', 'profile_photo']
 
 
 class WorkerCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Worker
-        fields = ['phone', 'country', 'languages', 'bio']
+        fields = ['phone', 'country', 'languages', 'bio', 'profile_photo']
 
 
 class WorkerScoreSerializer(serializers.ModelSerializer):

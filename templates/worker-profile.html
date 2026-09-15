@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moussoum Defar - My Profile</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0a0a0f;
+            color: #e2e8f0;
+            min-height: 100vh;
+        }
+        .container { max-width: 800px; margin: 0 auto; padding: 24px; }
+        .header {
+            display: flex; align-items: center; gap: 16px;
+            margin-bottom: 32px; padding-bottom: 24px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+        .back-btn {
+            padding: 8px 16px; background: rgba(255,255,255,0.06);
+            border: none; color: #94a3b8; border-radius: 8px;
+            cursor: pointer; font-size: 14px; text-decoration: none;
+        }
+        .back-btn:hover { background: rgba(255,255,255,0.1); color: white; }
+        .page-title { font-size: 24px; font-weight: 700; color: white; }
+        .card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 16px; padding: 32px; margin-bottom: 24px;
+        }
+        .card-title {
+            font-size: 18px; font-weight: 600; color: white;
+            margin-bottom: 24px;
+        }
+        .photo-section {
+            display: flex; align-items: center; gap: 24px;
+            margin-bottom: 32px;
+        }
+        .photo-preview {
+            width: 120px; height: 120px; border-radius: 50%;
+            background: rgba(255,255,255,0.06); display: flex;
+            align-items: center; justify-content: center;
+            font-size: 48px; color: rgba(255,255,255,0.3);
+            overflow: hidden; border: 3px solid rgba(16,185,129,0.3);
+        }
+        .photo-preview img {
+            width: 100%; height: 100%; object-fit: cover;
+        }
+        .photo-actions { display: flex; flex-direction: column; gap: 8px; }
+        .photo-btn {
+            padding: 10px 20px; border-radius: 8px; border: none;
+            cursor: pointer; font-size: 14px; font-weight: 500;
+            transition: all 0.2s;
+        }
+        .photo-btn.primary {
+            background: #10b981; color: white;
+        }
+        .photo-btn.primary:hover { background: #059669; }
+        .photo-btn.secondary {
+            background: rgba(255,255,255,0.06); color: #94a3b8;
+        }
+        .photo-btn.secondary:hover { background: rgba(255,255,255,0.1); color: white; }
+        .form-group { margin-bottom: 20px; }
+        .form-label {
+            display: block; font-size: 13px; font-weight: 500;
+            color: rgba(255,255,255,0.6); margin-bottom: 8px;
+        }
+        .form-input, .form-textarea, .form-select {
+            width: 100%; padding: 12px 16px; background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08); border-radius: 10px;
+            color: white; font-size: 14px; font-family: inherit;
+            transition: border-color 0.2s;
+        }
+        .form-input:focus, .form-textarea:focus, .form-select:focus {
+            outline: none; border-color: #10b981;
+        }
+        .form-textarea { min-height: 100px; resize: vertical; }
+        .form-select { cursor: pointer; }
+        .form-select option { background: #1a1a2e; color: white; }
+        .form-row {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+        }
+        .btn-group {
+            display: flex; gap: 12px; margin-top: 24px;
+        }
+        .btn {
+            padding: 12px 24px; border-radius: 10px; border: none;
+            cursor: pointer; font-size: 14px; font-weight: 600;
+            transition: all 0.2s;
+        }
+        .btn-primary { background: #10b981; color: white; flex: 1; }
+        .btn-primary:hover { background: #059669; }
+        .btn-secondary {
+            background: rgba(255,255,255,0.06); color: #94a3b8; flex: 1;
+        }
+        .btn-secondary:hover { background: rgba(255,255,255,0.1); color: white; }
+        .stats-grid {
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;
+            margin-bottom: 24px;
+        }
+        .stat-item {
+            text-align: center; padding: 16px;
+            background: rgba(255,255,255,0.03); border-radius: 12px;
+        }
+        .stat-value {
+            font-size: 24px; font-weight: 700; color: #10b981;
+            margin-bottom: 4px;
+        }
+        .stat-label {
+            font-size: 12px; color: rgba(255,255,255,0.4);
+            text-transform: uppercase;
+        }
+        .success-msg {
+            padding: 12px 16px; background: rgba(16,185,129,0.1);
+            border: 1px solid rgba(16,185,129,0.2); border-radius: 10px;
+            color: #10b981; font-size: 14px; margin-bottom: 20px;
+            display: none;
+        }
+        .error-msg {
+            padding: 12px 16px; background: rgba(239,68,68,0.1);
+            border: 1px solid rgba(239,68,68,0.2); border-radius: 10px;
+            color: #ef4444; font-size: 14px; margin-bottom: 20px;
+            display: none;
+        }
+        #fileInput { display: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="/templates/worker-dashboard.html" class="back-btn">← Back to Dashboard</a>
+            <h1 class="page-title">My Profile</h1>
+        </div>
+
+        <div class="stats-grid" id="statsGrid">
+            <div class="stat-item">
+                <div class="stat-value" id="statLevel">1</div>
+                <div class="stat-label">Level</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="statScore">0</div>
+                <div class="stat-label">Quality Score</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="statTasks">0</div>
+                <div class="stat-label">Tasks Done</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="statAccuracy">0%</div>
+                <div class="stat-label">Accuracy</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">Profile Photo</h2>
+            <div class="photo-section">
+                <div class="photo-preview" id="photoPreview">
+                    <span id="photoIcon">👤</span>
+                </div>
+                <div class="photo-actions">
+                    <input type="file" id="fileInput" accept="image/*" onchange="previewPhoto(event)">
+                    <button class="photo-btn primary" onclick="document.getElementById('fileInput').click()">Upload Photo</button>
+                    <button class="photo-btn secondary" onclick="removePhoto()">Remove Photo</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">Personal Information</h2>
+            <div id="successMsg" class="success-msg">Profile updated successfully!</div>
+            <div id="errorMsg" class="error-msg"></div>
+            <form id="profileForm" onsubmit="saveProfile(event)">
+                <div class="form-group">
+                    <label class="form-label">Username</label>
+                    <input type="text" class="form-input" id="username" disabled style="opacity:0.5;">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-input" id="email" disabled style="opacity:0.5;">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Phone</label>
+                        <input type="text" class="form-input" id="phone" placeholder="+221771234567">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Country</label>
+                        <select class="form-select" id="country"></select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Languages (comma-separated codes)</label>
+                    <input type="text" class="form-input" id="languages" placeholder="e.g. wolof, french">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Bio</label>
+                    <textarea class="form-textarea" id="bio" placeholder="Tell us about yourself..."></textarea>
+                </div>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-secondary" onclick="window.location.href='/templates/worker-dashboard.html'">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const TOKEN = localStorage.getItem('workerToken');
+        if (!TOKEN) window.location.href = '/templates/worker-login.html';
+
+        const headers = {
+            'Authorization': 'Bearer ' + TOKEN,
+            'Content-Type': 'application/json'
+        };
+
+        const LANGUAGES = [
+            {code:'wolof',name:'Wolof'},{code:'french',name:'French'},{code:'arabic',name:'Arabic'},
+            {code:'swahili',name:'Swahili'},{code:'hausa',name:'Hausa'},{code:'yoruba',name:'Yoruba'},
+            {code:'igbo',name:'Igbo'},{code:'amharic',name:'Amharic'},{code:'tigrinya',name:'Tigrinya'},
+            {code:'oromo',name:'Oromo'},{code:'somali',name:'Somali'},{code:'pidgin',name:'Pidgin'},
+            {code:'sheng',name:'Sheng'},{code:'twi',name:'Twi'},{code:'ewe',name:'Ewe'},
+            {code:'fula',name:'Fula'},{code:'bambara',name:'Bambara'},{code:'mandinka',name:'Mandinka'},
+            {code:'pulaar',name:'Pulaar'},{code:'lingala',name:'Lingala'},{code:'kinyarwanda',name:'Kinyarwanda'},
+            {code:'kirundi',name:'Kirundi'},{code:'setswana',name:'Setswana'},{code:'siswati',name:'SiSwati'},
+            {code:'sesotho',name:'Sesotho'},{code:'chichewa',name:'Chichewa'},{code:'shona',name:'Shona'},
+            {code:'ndebele',name:'Ndebele'},{code:'portuguese',name:'Portuguese'},{code:'spanish',name:'Spanish'},
+            {code:'english',name:'English'},{code:'tswana',name:'Tswana'}
+        ];
+
+        let COUNTRIES = [];
+        let currentWorker = null;
+        let pendingPhoto = null;
+
+        async function api(url, opts = {}) {
+            const res = await fetch(url, { headers, ...opts });
+            if (res.status === 401) { localStorage.removeItem('workerToken'); window.location.href = '/templates/worker-login.html'; return null; }
+            return res.json();
+        }
+
+        async function loadCountries() {
+            const res = await fetch('/api/v1/workers/countries/');
+            COUNTRIES = await res.json();
+            const select = document.getElementById('country');
+            select.innerHTML = '<option value="">Select country</option>' +
+                COUNTRIES.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+        }
+
+        async function loadProfile() {
+            const data = await api('/api/v1/workers/auth/profile/');
+            if (!data) return;
+            currentWorker = data;
+
+            document.getElementById('username').value = data.user?.username || '';
+            document.getElementById('email').value = data.user?.email || '';
+            document.getElementById('phone').value = data.phone || '';
+            document.getElementById('country').value = data.country?.id || '';
+            document.getElementById('bio').value = data.bio || '';
+            document.getElementById('languages').value = (data.languages || []).map(l => l.code).join(', ');
+
+            document.getElementById('statLevel').textContent = data.level || 1;
+            document.getElementById('statScore').textContent = (data.quality_score || 0).toFixed(1);
+            document.getElementById('statTasks').textContent = data.total_tasks || 0;
+            document.getElementById('statAccuracy').textContent = Math.round((data.accuracy || 0) * 100) + '%';
+
+            if (data.profile_photo) {
+                document.getElementById('photoPreview').innerHTML = `<img src="${data.profile_photo}" alt="Profile">`;
+                document.getElementById('photoIcon').style.display = 'none';
+            }
+        }
+
+        function previewPhoto(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            pendingPhoto = file;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('photoPreview').innerHTML = `<img src="${e.target.result}" alt="Profile">`;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function removePhoto() {
+            pendingPhoto = null;
+            document.getElementById('photoPreview').innerHTML = '<span id="photoIcon">👤</span>';
+            document.getElementById('fileInput').value = '';
+        }
+
+        async function saveProfile(event) {
+            event.preventDefault();
+            const successMsg = document.getElementById('successMsg');
+            const errorMsg = document.getElementById('errorMsg');
+            successMsg.style.display = 'none';
+            errorMsg.style.display = 'none';
+
+            const formData = new FormData();
+            formData.append('phone', document.getElementById('phone').value);
+            formData.append('country', document.getElementById('country').value);
+            formData.append('languages', document.getElementById('languages').value);
+            formData.append('bio', document.getElementById('bio').value);
+
+            if (pendingPhoto) {
+                formData.append('profile_photo', pendingPhoto);
+            }
+
+            try {
+                const res = await fetch('/api/v1/workers/auth/profile/', {
+                    method: 'PUT',
+                    headers: { 'Authorization': 'Bearer ' + TOKEN },
+                    body: formData
+                });
+
+                if (res.ok) {
+                    successMsg.style.display = 'block';
+                    loadProfile();
+                } else {
+                    const data = await res.json();
+                    errorMsg.textContent = JSON.stringify(data);
+                    errorMsg.style.display = 'block';
+                }
+            } catch (e) {
+                errorMsg.textContent = 'Error: ' + e.message;
+                errorMsg.style.display = 'block';
+            }
+        }
+
+        loadCountries().then(loadProfile);
+    </script>
+</body>
+</html>

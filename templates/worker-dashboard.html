@@ -147,6 +147,7 @@
             </nav>
             <div class="sidebar-footer">
                 <a onclick="logout()" class="sidebar-link" style="margin-bottom:12px;color:rgba(255,100,100,0.6);cursor:pointer;"><span class="icon">🚪</span> Logout</a>
+                <a href="/templates/worker-profile.html" class="sidebar-link" style="margin-bottom:12px;cursor:pointer;"><span class="icon">👤</span> My Profile</a>
                 <div class="sidebar-user">
                     <div class="user-avatar" id="userInitial">W</div>
                     <div class="user-info">
@@ -270,7 +271,12 @@
 
         if (workerData.user) {
             document.getElementById('userName').textContent = workerData.user.username;
-            document.getElementById('userInitial').textContent = workerData.user.username[0].toUpperCase();
+            const avatarEl = document.getElementById('userInitial');
+            if (workerData.profile_photo) {
+                avatarEl.innerHTML = `<img src="${workerData.profile_photo}" style="width:100%;height:100%;object-fit:cover;border-radius:10px;">`;
+            } else {
+                avatarEl.textContent = workerData.user.username[0].toUpperCase();
+            }
         }
 
         function showSection(name) {
@@ -424,7 +430,12 @@
             document.getElementById('leaderboardTable').innerHTML = data.map(w => `
                 <tr>
                     <td style="font-weight:600;color:${w.rank <= 3 ? '#fbbf24' : 'white'};">#${w.rank}</td>
-                    <td style="font-weight:500;">${w.username}</td>
+                    <td style="font-weight:500;display:flex;align-items:center;gap:10px;">
+                        <div style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;">
+                            ${w.profile_photo ? `<img src="${w.profile_photo}" style="width:100%;height:100%;object-fit:cover;">` : `<span style="font-size:14px;color:rgba(255,255,255,0.3);">👤</span>`}
+                        </div>
+                        ${w.username}
+                    </td>
                     <td>${w.country || '-'}</td>
                     <td style="color:#10b981;font-weight:600;">${w.quality_score.toFixed(1)}</td>
                     <td>${w.total_tasks}</td>

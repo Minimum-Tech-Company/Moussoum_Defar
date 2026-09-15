@@ -78,6 +78,7 @@ class WorkerViewSet(viewsets.ModelViewSet):
         workers = Worker.objects.select_related('user', 'country').order_by('-quality_score')[:20]
         data = []
         for i, w in enumerate(workers):
+            photo_url = w.profile_photo.url if w.profile_photo else None
             data.append({
                 'rank': i + 1,
                 'username': w.user.username,
@@ -85,6 +86,7 @@ class WorkerViewSet(viewsets.ModelViewSet):
                 'quality_score': w.quality_score,
                 'total_tasks': w.total_tasks,
                 'level': w.level,
+                'profile_photo': photo_url,
             })
         return Response(data)
 

@@ -56,6 +56,7 @@ class Worker(models.Model):
     accuracy = models.FloatField(default=0.0)
     is_verified = models.BooleanField(default=False)
     bio = models.TextField(blank=True)
+    profile_photo = models.ImageField(upload_to='profile_photos/%Y/%m/', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
