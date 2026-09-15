@@ -119,6 +119,42 @@ class DataCollectionViewSet(viewsets.ReadOnlyModelViewSet):
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+    @action(detail=True, methods=['get'], url_path='download')
+    def download(self, request, pk=None):
+        collection = self.get_object()
+        status_filter = request.query_params.get('status')
+
+        qs = DataSubmission.objects.filter(
+            collection=collection, file__isnull=False
+        ).exclude(file='')
+
+        if status_filter:
+            qs = qs.filter(status=status_filter)
+
+        if not qs.exists():
+            return Response({'error': 'No files found in this collection'}, status=404)
+
+        import io
+        import zipfile
+        from django.http import StreamingHttpResponse
+
+        zip_buffer = io.BytesIO()
+        with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zf:
+            for sub in qs:
+                if sub.file:
+                    try:
+                        filename = sub.file.name
+                        content = sub.file.read()
+                        zf.writestr(filename, content)
+                    except Exception:
+                        continue
+
+        zip_buffer.seek(0)
+        response = StreamingHttpResponse(zip_buffer, content_type='application/zip')
+        safe_title = collection.title.replace(' ', '_')[:50]
+        response['Content-Disposition'] = f'attachment; filename="{safe_title}.zip"'
+        return response
+
 
 class DataSubmissionViewSet(viewsets.ModelViewSet):
     serializer_class = DataSubmissionSerializer
