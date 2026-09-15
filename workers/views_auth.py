@@ -56,8 +56,8 @@ class WorkerLoginView(viewsets.ViewSet):
             worker = Worker.objects.get(user=user)
         except Worker.DoesNotExist:
             return Response(
-                {'error': 'Worker profile not found'},
-                status=status.HTTP_404_NOT_FOUND
+                {'error': 'This account is not a worker. Please use the client login.'},
+                status=status.HTTP_403_FORBIDDEN
             )
 
         refresh = RefreshToken.for_user(user)
@@ -99,7 +99,38 @@ class WorkerProfileView(viewsets.ViewSet):
                 status=status.HTTP_404_NOT_FOUND
             )
 
-        serializer = WorkerUpdateSerializer(worker, data=request.data, partial=True)
+        data = request.data.copy()
+
+        # Handle languages from comma-separated string
+        languages_raw = data.get('languages', '')
+        if isinstance(languages_raw, str) and languages_raw.strip():
+            from .models import Language
+            lang_names = [n.strip() for n in languages_raw.split(',') if n.strip()]
+            lang_ids = []
+            for name in lang_names:
+                lang = Language.objects.filter(name__iexact=name).first()
+                if lang:
+                    lang_ids.append(lang.id)
+                else:
+                    lang = Language.objects.filter(code__iexact=name).first()
+                    if lang:
+                        lang_ids.append(lang.id)
+            # Remove old languages value and set new IDs
+            data.pop('languages', None)
+            # Set languages as list of IDs directly on the worker
+            worker.languages.set(lang_ids)
+        elif isinstance(languages_raw, list):
+            # Already a list, pass through
+            pass
+        else:
+            data.pop('languages', None)
+
+        # Handle country as empty string
+        country = data.get('country', '')
+        if country == '' or country is None:
+            data.pop('country', None)
+
+        serializer = WorkerUpdateSerializer(worker, data=data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
 

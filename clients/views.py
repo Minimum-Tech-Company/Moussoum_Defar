@@ -109,13 +109,15 @@ class LoginView(viewsets.ViewSet):
                 status=status.HTTP_401_UNAUTHORIZED
             )
 
-        refresh = RefreshToken.for_user(user)
-
         try:
             client = Client.objects.get(user=user)
-            client_data = ClientSerializer(client).data
         except Client.DoesNotExist:
-            client_data = None
+            return Response(
+                {'error': 'This account is not a client. Please use the worker login.'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        refresh = RefreshToken.for_user(user)
 
         return Response({
             'user': {
@@ -123,7 +125,7 @@ class LoginView(viewsets.ViewSet):
                 'username': user.username,
                 'email': user.email,
             },
-            'client': client_data,
+            'client': ClientSerializer(client).data,
             'tokens': {
                 'access': str(refresh.access_token),
                 'refresh': str(refresh),
