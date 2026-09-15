@@ -10,34 +10,57 @@
 
 ## The Problem
 
-I built this because I see the limit of the existing AIs, every time we tested an AI model with African context, it failed or it can't be as goodas in the West.
+The AI industry has a blind spot: Africa. All the data, benchmarks, and tools are built for Western contexts. Try asking a chatbot about FCFA, Mobile Money, or Wolof — it doesn't know what you're talking about.
 
-Try asking a chatbot about our means of payment or our finances or even in relation to our educational evolution - it doesn't know what you're talking about. Ask it to understand Wolof mixed with French - it's lost. Ask about FCFA or how to get a birth certificate in Dakar - nothing.
-
-The AI industry has a blind spot: Africa. All the data, benchmarks, and tools are built for Western contexts. We're just... not part of the conversation.
-
-## Why This Exists
-
-Moussoum Defar is my attempt to fix this. It's a platform where:
-
-- African workers collect real data from real communities ( student, linguist, or expert)
-- AI models get tested against African benchmarks (not just translated Western ones)
-- We build the infrastructure that's been missing since the AI Boom
-
-I started with 3 countries (Senegal, Nigeria, Kenya) and 62 test cases. But the goal is to cover the whole continent.
+**Moussoum Defar** is the missing data layer: a platform where African workers collect real data, clients launch collection campaigns, and AI models get tested against African benchmarks.
 
 ---
 
 ## What It Does
 
 ### Data Collection
-Real people, real data. Workers across Africa get paid to collect text, voice, and images in their own languages and communities. No more scraping the internet for "African data."
-
-### AI Evaluation
-You have an AI model? Test it. Send it through 62 African test cases and see if it actually understands the context. Not just "does it speak French?" but "does it understand what a senegalese person means when they say 'Nanga def?'"
+Clients create collection campaigns (text, audio, image, video). Workers across Africa get paid to contribute data in their own languages and communities.
 
 ### Worker System
-Students, linguists, experts - they all earn money by contributing to better AI. There's a scoring system, levels, the whole gamification thing. The better you are, the more you earn.
+Students, linguists, experts earn money contributing to better AI. Scoring system, levels, gamification. The better you are, the more you earn.
+
+### AI Evaluation
+Test your AI models against African benchmarks. See if they understand Mobile Money, local languages, and culture.
+
+### Client Dashboard
+Full dashboard to manage collections, review submissions, approve/reject contributions, and track spending.
+
+---
+
+## Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                        CLIENT                                    │
+│  - Creates collection campaigns                                  │
+│  - Deposits funds into wallet                                    │
+│  - Reviews & approves worker submissions                        │
+│  - Pays workers automatically on approval                       │
+└─────────────────────────┬───────────────────────────────────────┘
+                          │
+                          ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                     PLATFORM                                     │
+│  - Manages collections, submissions, payments                   │
+│  - Calculates quality scores                                    │
+│  - Sends notifications                                          │
+│  - Tracks worker levels and earnings                            │
+└─────────────────────────┬───────────────────────────────────────┘
+                          │
+                          ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                        WORKER                                    │
+│  - Browses available collections                                │
+│  - Submits data (text, audio, image, video)                     │
+│  - Earns money on approval                                      │
+│  - Tracks score, level, and balance                             │
+└─────────────────────────────────────────────────────────────────┘
+```
 
 ---
 
@@ -62,103 +85,100 @@ docker compose up
 **Access:**
 - Home: http://localhost:8000/templates/index.html
 - Admin: http://localhost:8000/admin/
-- API Docs: http://localhost:8000/api/docs/
+- API Docs (Swagger): http://localhost:8000/api/docs/
 
 **Web Interfaces:**
-- Worker Registration: http://localhost:8000/templates/worker-register.html
+- Worker Register: http://localhost:8000/templates/worker-register.html
 - Worker Login: http://localhost:8000/templates/worker-login.html
 - Worker Dashboard: http://localhost:8000/templates/worker-dashboard.html
-- Client Registration: http://localhost:8000/templates/client-register.html
+- Client Register: http://localhost:8000/templates/client-register.html
 - Client Login: http://localhost:8000/templates/client-login.html
-- Evaluation UI: http://localhost:8000/templates/evaluation.html
+- Client Dashboard: http://localhost:8000/templates/client-dashboard.html
+- Evaluation Lab: http://localhost:8000/templates/evaluation.html
+
+---
+
+## Authentication
+
+All API endpoints (except register/login) require a JWT token.
+
+### Worker Login
+
+```bash
+TOKEN=$(curl -s http://localhost:8000/api/v1/workers/auth/login/ \
+  -X POST -H 'Content-Type: application/json' \
+  -d '{"username":"testworker","password":"testworker123"}' \
+  | python3 -c "import sys,json; print(json.load(sys.stdin)['tokens']['access'])")
+```
+
+### Client Login
+
+```bash
+TOKEN=$(curl -s http://localhost:8000/api/v1/clients/login/ \
+  -X POST -H 'Content-Type: application/json' \
+  -d '{"username":"testclient","password":"testclient123"}' \
+  | python3 -c "import sys,json; print(json.load(sys.stdin)['tokens']['access'])")
+```
+
+### Use Token
+
+```bash
+curl http://localhost:8000/api/v1/workers/collections/ \
+  -H "Authorization: Bearer $TOKEN"
+```
 
 ---
 
 ## API Endpoints
 
-### Client (AI Model Testing)
-
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/api/v1/auth/register/` | POST | Register new client |
-| `/api/v1/auth/login/` | POST | Client login |
-| `/api/v1/clients/` | GET | List clients |
-| `/api/v1/clients/me/` | GET | Get current client profile |
-| `/api/v1/clients/usage/` | GET | Check evaluation usage |
-| `/api/v1/benchmarks/` | GET | List African benchmarks |
-| `/api/v1/benchmarks/{id}/tests/` | GET | Get test cases for benchmark |
-| `/api/v1/evaluations/` | POST | Submit model for evaluation |
-| `/api/v1/evaluations/{id}/report/` | GET | Get evaluation report |
-| `/api/v1/api-keys/` | GET | Manage API keys |
-
-### Worker (Data Collection)
+### Auth (Public - No Token)
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
 | `/api/v1/workers/auth/register/` | POST | Register as worker |
 | `/api/v1/workers/auth/login/` | POST | Worker login |
-| `/api/v1/workers/auth/profile/` | GET/PUT | Get/update worker profile |
-| `/api/v1/workers/` | GET | List all workers |
-| `/api/v1/workers/{id}/` | GET | Get worker details |
-| `/api/v1/workers/data-collections/` | GET | List data collection projects |
-| `/api/v1/workers/submissions/` | POST | Submit data |
+| `/api/v1/clients/register/` | POST | Register as client |
+| `/api/v1/clients/login/` | POST | Client login |
 
----
+### Worker
 
-## How It Works
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/v1/workers/auth/profile/` | GET | Get worker profile (score, level, balance) |
+| `/api/v1/workers/collections/` | GET | List available collections |
+| `/api/v1/workers/collections/{id}/submit/` | POST | Submit data (text or file) |
+| `/api/v1/workers/annotations/` | GET | List annotation tasks |
+| `/api/v1/workers/annotations/{id}/submit_annotation/` | POST | Submit annotation |
+| `/api/v1/workers/rlhf/` | GET | List RLHF tasks |
+| `/api/v1/workers/rlhf/{id}/submit_feedback/` | POST | Submit RLHF feedback |
+| `/api/v1/workers/payments/` | GET | List earnings |
+| `/api/v1/workers/notifications/` | GET | List notifications |
+| `/api/v1/workers/notifications/{id}/read/` | POST | Mark notification read |
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    CLIENT SUBMITS MODEL                      │
-│  POST /api/v1/evaluations/                                  │
-│  {benchmark_id: 1, model_endpoint: "https://api.com/predict"}│
-└─────────────────────────┬───────────────────────────────────┘
-                          │
-                          ▼
-┌─────────────────────────────────────────────────────────────┐
-│                  PLATFORM EVALUATES                         │
-│  • Sends 62 African test questions to model                 │
-│  • Scores responses (context, language, safety)             │
-│  • Generates detailed report                                │
-└─────────────────────────┬───────────────────────────────────┘
-                          │
-                          ▼
-┌─────────────────────────────────────────────────────────────┐
-│                    CLIENT GETS RESULTS                       │
-│  {overall_score: 82.5, by_category: {mobile_money: 94}}    │
-└─────────────────────────────────────────────────────────────┘
-```
+### Client
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/v1/clients/profile/me/` | GET | Get client profile (balance) |
+| `/api/v1/clients/profile/deposit/` | POST | Deposit funds (min $10) |
+| `/api/v1/clients/data-collections/` | GET/POST | List / Create collections |
+| `/api/v1/clients/submissions/` | GET | List worker submissions |
+| `/api/v1/clients/submissions/{id}/approve/` | POST | Approve submission (pays worker) |
+| `/api/v1/clients/submissions/{id}/reject/` | POST | Reject submission |
+
+### Benchmarks & Evaluation
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/v1/benchmarks/` | GET | List African benchmarks |
+| `/api/v1/benchmarks/{id}/tests/` | GET | Get test cases |
+| `/api/v1/evaluations/test_quick/` | POST | Quick model evaluation |
 
 ---
 
 ## API Examples
 
-### Client: Register
-
-```bash
-curl -X POST http://localhost:8000/api/v1/auth/register/ \
-  -H "Content-Type: application/json" \
-  -d '{
-    "username": "mycompany",
-    "email": "contact@mycompany.com",
-    "password": "securepass123",
-    "company_name": "My Company SARL",
-    "company_description": "AI chatbot for banking"
-  }'
-```
-
-### Client: Login
-
-```bash
-curl -X POST http://localhost:8000/api/v1/auth/login/ \
-  -H "Content-Type: application/json" \
-  -d '{
-    "username": "mycompany",
-    "password": "securepass123"
-  }'
-```
-
-### Worker: Register
+### Register Worker
 
 ```bash
 curl -X POST http://localhost:8000/api/v1/workers/auth/register/ \
@@ -169,63 +189,103 @@ curl -X POST http://localhost:8000/api/v1/workers/auth/register/ \
     "password": "securepass123",
     "password2": "securepass123",
     "phone": "+221771234567",
-    "country": 1,
-    "languages": [1, 2],
-    "bio": "Linguist specializing in Wolof and French"
+    "country": "Senegal",
+    "languages": ["Wolof", "French"],
+    "bio": "Linguist specializing in Wolof"
   }'
 ```
 
-### Worker: Login
+### Register Client
 
 ```bash
-curl -X POST http://localhost:8000/api/v1/workers/auth/login/ \
+curl -X POST http://localhost:8000/api/v1/clients/register/ \
   -H "Content-Type: application/json" \
   -d '{
-    "username": "amine_worker",
-    "password": "securepass123"
+    "username": "mycompany",
+    "email": "contact@mycompany.com",
+    "password": "securepass123",
+    "company_name": "My Company SARL",
+    "company_description": "AI chatbot for banking"
   }'
 ```
 
-### Worker: Get Profile
+### Deposit Funds
 
 ```bash
-curl http://localhost:8000/api/v1/workers/auth/profile/ \
-  -H "Authorization: Bearer YOUR_TOKEN"
-```
-
-### Evaluate a Model
-
-```bash
-curl -X POST http://localhost:8000/api/v1/evaluations/ \
+curl -X POST http://localhost:8000/api/v1/clients/profile/deposit/ \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Authorization: Bearer $CLIENT_TOKEN" \
+  -d '{"amount": 50}'
+```
+
+### Create Collection
+
+```bash
+curl -X POST http://localhost:8000/api/v1/clients/data-collections/ \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $CLIENT_TOKEN" \
   -d '{
-    "benchmark_id": 1,
-    "model_name": "My Banking Chatbot",
-    "model_endpoint": "https://api.mymodel.com/predict",
-    "model_api_key": "sk-abc123"
+    "title": "Wolof Voice Commands",
+    "description": "Collect Wolof voice commands for AI training",
+    "data_type": "audio",
+    "language": "Wolof",
+    "country": "Senegal",
+    "target_count": 100,
+    "price_per_item": 0.50,
+    "instructions": "Speak clearly in Wolof. Record common phrases."
   }'
 ```
 
-### Get Evaluation Report
+### Submit Data (Text)
 
 ```bash
-curl http://localhost:8000/api/v1/evaluations/1/report/ \
-  -H "Authorization: Bearer YOUR_TOKEN"
+curl -X POST http://localhost:8000/api/v1/workers/collections/1/submit/ \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $WORKER_TOKEN" \
+  -d '{"transcription": "Nanga def, ca va?", "metadata": {}}'
 ```
 
-### List Benchmarks
+### Submit Data (Audio File)
 
 ```bash
-curl http://localhost:8000/api/v1/benchmarks/ \
-  -H "Authorization: Bearer YOUR_TOKEN"
+curl -X POST http://localhost:8000/api/v1/workers/collections/1/submit/ \
+  -H "Authorization: Bearer $WORKER_TOKEN" \
+  -F "transcription=Voice recording" \
+  -F "file=@recording.webm"
 ```
 
-### Get Benchmark Tests
+### Approve Submission (Pays Worker)
 
 ```bash
-curl http://localhost:8000/api/v1/benchmarks/1/tests/ \
-  -H "Authorization: Bearer YOUR_TOKEN"
+curl -X POST http://localhost:8000/api/v1/clients/submissions/1/approve/ \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $CLIENT_TOKEN" \
+  -d '{"notes": "Great quality", "quality_score": 0.95}'
+```
+
+---
+
+## Data Collection Flow
+
+1. **Client deposits funds** → `POST /api/v1/clients/profile/deposit/`
+2. **Client creates collection** → `POST /api/v1/clients/data-collections/`
+3. **Worker browses collections** → `GET /api/v1/workers/collections/`
+4. **Worker submits data** → `POST /api/v1/workers/collections/{id}/submit/`
+5. **Client reviews submission** → `GET /api/v1/clients/submissions/`
+6. **Client approves** → `POST /api/v1/clients/submissions/{id}/approve/`
+7. **Worker gets paid** → Balance increases, quality score recalculated
+
+---
+
+## Worker Quality Score
+
+Score is calculated on a 0-100 scale:
+
+```
+accuracy_score    = accuracy × 50      (50% weight)
+volume_score      = min(tasks/100, 1) × 25  (25% weight)
+consistency_score = consistency × 25   (25% weight)
+total             = accuracy_score + volume_score + consistency_score
 ```
 
 ---
@@ -237,15 +297,6 @@ curl http://localhost:8000/api/v1/benchmarks/1/tests/ \
 | Senegal | 22 | Mobile Money, Wolof, Culture, Admin |
 | Nigeria | 19 | Fintech, Pidgin, Culture, Security |
 | Kenya | 21 | M-Pesa, Sheng, Culture, Health |
-
----
-
-## Recent Changes
-
-- Fixed URL routing for authentication endpoints
-- Removed deprecated `version` field from docker-compose.yml
-- Added `requests` package for API calls
-- Generated initial database migrations
 
 ---
 
@@ -261,29 +312,19 @@ curl http://localhost:8000/api/v1/benchmarks/1/tests/ \
 
 ---
 
-## Contributing
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-### Add Your Country's Benchmark
-
-1. Create `evaluation/benchmarks/yourcountry.py`
-2. Add 20+ test cases
-3. Run `python manage.py load_benchmarks`
-
----
-
 ## Roadmap
 
-- [ ] Add more African countries (Ghana, Tanzania, Ethiopia...)
-- [ ] Voice data collection
-- [ ] Image datasets for computer vision
-- [ ] Real-time evaluation dashboard
+- [x] Worker registration and dashboard
+- [x] Client dashboard with collection management
+- [x] Audio/video/image upload support
+- [x] Submission approval with automatic payment
+- [x] Quality scoring system
+- [x] Notification system
+- [x] Client wallet (deposit/balance)
+- [ ] Mobile Money integration (Orange Money, Wave, M-Pesa)
+- [ ] Real-time WebSocket notifications
 - [ ] Mobile app for workers
+- [ ] More African countries (Ghana, Tanzania, Ethiopia...)
 
 ---
 
@@ -301,12 +342,10 @@ To request commercial license: malickoseme@gmail.com
 
 ## Support
 
-- Documentation: /api/docs/
+- API Docs: http://localhost:8000/api/docs/
 - Issues: GitHub Issues
 - Email: malickoseme@gmail.com
 
 ---
 
 **Made in Africa, for Africa.**
-
-If you want to help, open an issue or send me an email.
